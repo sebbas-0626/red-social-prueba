@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { mockApi } from '@/services/mockApi'
+import { authService } from '@/services/authService'
 
 const router = useRouter()
 const loading = ref(false)
@@ -59,7 +59,7 @@ const dataForm = reactive({
 const onSubmit = async () => {
   loading.value = true
   try {
-    await mockApi.login(dataForm.email, dataForm.password)
+    await authService.login(dataForm)
     router.push('/home')
   } catch (error) {
     console.error('Error:', error)

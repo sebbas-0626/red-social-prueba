@@ -7,7 +7,7 @@
         <router-link to="/login" class="text-black font-semibold">Inicia Sesión</router-link>
       </p>
 
-      <form @submit.prevent="onSubmit" class="space-y-4">
+      <form @submit.prevent="onSubmit" class="space-y-4"> 
         <div>
           <label class="text-sm font-medium text-gray-700">Usuario *</label>
           <input
@@ -43,9 +43,11 @@
 
         <button
           type="submit"
+          :disabled="loading"
           class="w-full bg-black text-white py-2.5 rounded-md font-semibold hover:bg-black/80 transition"
         >
-          Registrarse
+          <span v-if="loading">Cargando...</span>
+          <span v-else>Registrarse</span>
         </button>
       </form>
     </section>
@@ -53,10 +55,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { authService } from '@/services/authService'
 
 const router = useRouter()
+const loading = ref(false)
 
 const dataForm = reactive({
   username: '',
@@ -64,8 +68,17 @@ const dataForm = reactive({
   password: ''
 })
 
-const onSubmit = () => {
-  console.log('Registro:', dataForm)
-  router.push('/login')
+const onSubmit = async () => {
+  loading.value = true
+  try {
+    await authService.register(dataForm)
+    router.push('/login')
+  } catch (error) {
+    console.error('Error:', error)
+    alert('Error en el registro')
+  } finally {
+    loading.value = false
+  }
 }
+
 </script>
