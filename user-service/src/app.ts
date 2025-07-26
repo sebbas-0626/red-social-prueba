@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { sequelize } from './db/connection';
 import userRoutes from './routes/userRoutes';
+import { setupSwagger } from './config/swagger';
 import './models/User';
 
 dotenv.config();
@@ -12,6 +13,9 @@ const PORT = process.env.PORT || 3002;
 
 app.use(cors());
 app.use(express.json());
+
+// Setup Swagger
+setupSwagger(app);
 
 app.use('/api/users', userRoutes);
 
