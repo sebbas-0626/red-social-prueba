@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { sequelize } from './db/connection';
 import postRoutes from './routes/postRoutes';
+import { setupSwagger } from './config/swagger';
 import './models/Post';
 import './models/Like';
 
@@ -13,6 +14,9 @@ const PORT = process.env.PORT || 3003;
 
 app.use(cors());
 app.use(express.json());
+
+// Setup Swagger
+setupSwagger(app);
 
 app.use('/api/posts', postRoutes);
 

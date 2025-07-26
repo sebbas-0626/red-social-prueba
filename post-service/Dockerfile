@@ -21,5 +21,5 @@ RUN npm ci --only=production
 # 4) Traemos la carpeta dist del builder
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 3001
+EXPOSE 3003
 CMD ["npm", "start"]

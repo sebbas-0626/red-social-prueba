@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { sequelize } from './db/connection';
 import authRoutes from './routes/authRoutes';
 import './models/User';
+import { setupSwagger } from './config/swagger';
 
 dotenv.config();
 
@@ -14,6 +15,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+
+// Setup Swagger
+setupSwagger(app);
 
 app.get('/', (_req, res) => {
   res.send('Auth service funcionando correctamente');

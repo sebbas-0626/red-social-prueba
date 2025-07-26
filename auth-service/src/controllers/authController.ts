@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 
+// Register function to create a new user
 export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
@@ -43,6 +44,8 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+
+// Login function to authenticate users
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -77,4 +80,4 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: 'Error del servidor', error });
   }
-};
+}

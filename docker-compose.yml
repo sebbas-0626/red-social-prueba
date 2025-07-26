@@ -4,6 +4,7 @@ services:
   # Base de datos PostgreSQL
   postgres:
     image: postgres:15-alpine
+    container_name: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -17,6 +18,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
   # Servicio de autenticación
   auth-service:
@@ -31,6 +34,15 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=auth_service
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - NODE_ENV=production
 
   # Servicio de usuarios
   user-service:
@@ -39,10 +51,20 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3002:3002"
+    volumes:
+      - ./user-service/.env:/app/.env
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=user_service
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
 
   # Servicio de posts
   post-service:
@@ -51,10 +73,20 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3003:3003"
+    volumes:
+      - ./post-service/.env:/app/.env
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=post_service
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
 
   # Frontend Vue.js
   frontend:
@@ -68,10 +100,16 @@ services:
       - user-service
       - post-service
     restart: unless-stopped
+    networks:
+      - app-network
+    environment:
+      - VITE_AUTH_SERVICE_URL=http://auth-service:3001
+      - VITE_USER_SERVICE_URL=http://user-service:3002
+      - VITE_POST_SERVICE_URL=http://post-service:3003
 
 volumes:
   postgres_data:
 
 networks:
-  default:
+  app-network:
     driver: bridge

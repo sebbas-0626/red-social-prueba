@@ -1,6 +1,35 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - password
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: The auto-generated id of the user
+ *         username:
+ *           type: string
+ *           description: The username
+ *         email:
+ *           type: string
+ *           description: The user email
+ *         password:
+ *           type: string
+ *           description: The user password (hashed)
+ *       example:
+ *         id: 1
+ *         username: johndoe
+ *         email: john@example.com
+ *         password: hashedpassword
+ */
 export interface UserAttributes {
   id?: number;
   username: string;

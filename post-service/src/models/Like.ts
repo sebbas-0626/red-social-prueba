@@ -1,6 +1,31 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Like:
+ *       type: object
+ *       required:
+ *         - userId
+ *         - postId
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID único del like
+ *         userId:
+ *           type: integer
+ *           description: ID del usuario que dio like
+ *         postId:
+ *           type: integer
+ *           description: ID del post que recibió like
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación del like
+ */
+
 export interface LikeAttributes {
   id?: number;
   userId: number;
