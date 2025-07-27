@@ -66,7 +66,7 @@
     </div>
   </div>
 </template>
-
+<!-- revizar funcionalidad  -->
 <script setup lang="ts">
 import { ref } from 'vue'
 
