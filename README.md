@@ -1,259 +1,416 @@
-# Red Social - Microservicios
+# Red Social Backend - Arquitectura de Microservicios
 
-aplicación de red social construida con arquitectura de microservicios usando Node.js, TypeScript, PostgreSQL y Vue.js.
+## 📋 Descripción General
+Sistema de red social construido con arquitectura de microservicios usando Node.js, TypeScript, Express y PostgreSQL. Cada microservicio maneja una funcionalidad específica y se comunica con otros a través de APIs REST.
 
-## 🏗️ Arquitectura
+## 🏗️ Arquitectura del Sistema
 
-El proyecto está dividido en los siguientes microservicios:
-
-### Backend (Microservicios)
-- **Auth Service** (Puerto 3001): Maneja autenticación y autorización de usuarios
-- **User Service** (Puerto 3002): Gestiona perfiles y datos de usuarios
-- **Post Service** (Puerto 3003): Administra publicaciones y contenido
-
-### Frontend
-- **Vue.js App** (Puerto 5173): Interfaz de usuario construida con Vue 3, TypeScript y Tailwind CSS
-
-### Base de Datos
-- **PostgreSQL** (Puerto 5435): Base de datos relacional compartida
-
-## 🛠️ Tecnologías
-
-### Backend
-- Node.js + TypeScript
-- Express.js
-- Sequelize ORM
-- PostgreSQL
-- JWT para autenticación
-- bcryptjs para hash de contraseñas
-
-### Frontend
-- Vue 3 + TypeScript
-- Vue Router
-- Pinia (estado global)
-- Tailwind CSS
-- Axios (HTTP client)
-- Vite (build tool)
-
-## 📋 Prerrequisitos
-
-### Para desarrollo local:
-- Node.js (v18 o superior)
-- npm o yarn
-- PostgreSQL (v15 o superior)
-
-### Para Docker:
-- Docker
-- Docker Compose
-
-## 🚀 Ejecución Local
-
-### 1. Configurar Base de Datos
-```bash
-# Instalar PostgreSQL y crear base de datos
-createdb red_social
+### 📊 Diagrama de Microservicios
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Auth Service  │    │   User Service  │    │   Post Service  │
+│   (Puerto 3001) │    │   (Puerto 3002) │    │   (Puerto 3003) │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                    ┌─────────────────┐
+                    │   PostgreSQL    │
+                    │   Database      │
+                    └─────────────────┘
 ```
 
-### 2. Configurar Variables de Entorno
-Crear archivos `.env` en cada servicio:
+## 🚀 Microservicios
 
-**auth-service/.env:**
+### 1. **Auth Service** (`auth-service/`)
+- **Puerto**: 3001
+- **Función**: Autenticación y autorización
+- **Endpoints**: Registro, login, verificación de tokens JWT
+- **Base de datos**: Tabla `users`
+
+### 2. **User Service** (`user-service/`)
+- **Puerto**: 3002
+- **Función**: Gestión de perfiles de usuario
+- **Endpoints**: Perfiles, búsqueda de usuarios, relaciones
+- **Base de datos**: Extensión de tabla `users`
+
+### 3. **Post Service** (`post-service/`)
+- **Puerto**: 3003
+- **Función**: Gestión de publicaciones
+- **Endpoints**: Posts, likes, comentarios
+- **Base de datos**: Tablas `posts`, `likes`
+
+## 🛠️ Tecnologías Utilizadas
+
+### Backend
+- **Node.js**: Runtime de JavaScript
+- **TypeScript**: Lenguaje tipado
+- **Express**: Framework web
+- **Sequelize**: ORM para PostgreSQL
+- **JWT**: Autenticación con tokens
+- **Swagger**: Documentación de APIs
+
+### Base de Datos
+- **PostgreSQL**: Base de datos relacional
+- **Docker**: Contenedores para desarrollo
+
+### Frontend
+- **Vue.js 3**: Framework frontend
+- **TypeScript**: Tipado estático
+- **Tailwind CSS**: Framework CSS
+- **Vite**: Build tool
+
+## 📁 Estructura del Proyecto
+
+```
+red-social-backend/
+├── auth-service/          # Microservicio de autenticación
+│   ├── src/
+│   │   ├── controllers/   # Lógica de negocio
+│   │   ├── routes/        # Definición de endpoints
+│   │   ├── models/        # Modelos de datos
+│   │   ├── middlewares/   # Funciones intermedias
+│   │   ├── config/        # Configuraciones
+│   │   └── db/           # Conexión a base de datos
+│   ├── dist/             # Código compilado
+│   └── README.md         # Documentación específica
+├── user-service/         # Microservicio de usuarios
+├── post-service/         # Microservicio de posts
+├── red-social-vue/       # Frontend en Vue.js
+├── docker-compose.yml    # Orquestación de contenedores
+└── README.md            # Este archivo
+```
+
+## 🚀 Instalación y Configuración
+
+### Prerrequisitos
+- Node.js (v18+)
+- Docker y Docker Compose
+- PostgreSQL
+
+### 1. Clonar el repositorio
+```bash
+git clone <url-del-repositorio>
+cd red-social-backend
+```
+
+### 2. Configurar variables de entorno
+Crear archivos `.env` en cada microservicio:
+
+**auth-service/.env**
 ```env
 PORT=3001
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=red_social
 DB_USER=postgres
-DB_PASSWORD=tu_password
-JWT_SECRET=tu_jwt_secret
+DB_PASSWORD=password
+JWT_SECRET=tu_secreto_jwt
 ```
 
-**user-service/.env:**
+**user-service/.env**
 ```env
 PORT=3002
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=red_social
 DB_USER=postgres
-DB_PASSWORD=tu_password
-JWT_SECRET=tu_jwt_secret
+DB_PASSWORD=password
+JWT_SECRET=tu_secreto_jwt
 ```
 
-**post-service/.env:**
+**post-service/.env**
 ```env
 PORT=3003
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=red_social
 DB_USER=postgres
-DB_PASSWORD=tu_password
-JWT_SECRET=tu_jwt_secret
+DB_PASSWORD=password
+JWT_SECRET=tu_secreto_jwt
 ```
 
-**red-social-vue/.env:**
-```env
-VITE_AUTH_SERVICE_URL=http://localhost:3001
-VITE_USER_SERVICE_URL=http://localhost:3002
-VITE_POST_SERVICE_URL=http://localhost:3003
-```
-
-### 3. Instalar Dependencias y Ejecutar
-
-#### Auth Service
+### 3. Instalar dependencias
 ```bash
-cd auth-service
-npm install
-npm run dev
+# Instalar en cada microservicio
+cd auth-service && npm install
+cd ../user-service && npm install
+cd ../post-service && npm install
+cd ../red-social-vue && npm install
 ```
 
-#### User Service
+### 4. Configurar base de datos
 ```bash
-cd user-service
-npm install
-npm run dev
+# Ejecutar script de inicialización
+psql -U postgres -d red_social -f init-db.sql
 ```
 
-#### Post Service
+### 5. Compilar microservicios
 ```bash
-cd post-service
-npm install
-npm run dev
-```
-
-#### Frontend
-```bash
-cd red-social-vue
-npm install
-npm run dev
+cd auth-service && npm run build
+cd ../user-service && npm run build
+cd ../post-service && npm run build
 ```
 
 ## 🐳 Ejecución con Docker
 
-### 1. Construir y ejecutar todos los servicios
+### Opción 1: Todos los servicios
 ```bash
-# Desde la raíz del proyecto
-docker-compose up --build
+docker-compose up -d
 ```
 
-### 2. Ejecutar en segundo plano
+### Opción 2: Servicios individuales
 ```bash
-docker-compose up -d --build
+# Auth Service
+cd auth-service
+docker build -t auth-service .
+docker run -p 3001:3001 auth-service
+
+# User Service
+cd user-service
+docker build -t user-service .
+docker run -p 3002:3002 user-service
+
+# Post Service
+cd post-service
+docker build -t post-service .
+docker run -p 3003:3003 post-service
 ```
 
-### 3. Ver logs
-```bash
-# Todos los servicios
-docker-compose logs -f
+## 🛑 Comandos Docker Esenciales
 
-# Servicio específico
-docker-compose logs -f auth-service
+### Detener Contenedores
+
+#### `docker stop` - Terminación Suave (Recomendado)
+```bash
+# Detener un contenedor específico
+docker stop auth-service
+
+# Detener múltiples contenedores
+docker stop auth-service user-service post-service
+
+# Con tiempo personalizado (30 segundos)
+docker stop --time=30 auth-service
 ```
 
-### 4. Detener servicios
+**¿Cómo funciona?**
+1. **SIGTERM**: Envía señal de terminación suave al proceso principal
+2. **Espera**: Aguarda 10 segundos por defecto para cierre graceful
+3. **SIGKILL**: Si no responde, fuerza la terminación
+
+#### `docker kill` - Terminación Forzada
 ```bash
-docker-compose down
+# Solo usar en emergencias
+docker kill auth-service
 ```
 
-### 5. Limpiar volúmenes (eliminar datos)
+#### `docker-compose stop` - Múltiples Servicios
 ```bash
-docker-compose down -v
+# Detener todos los servicios
+docker-compose stop
+
+# Detener servicios específicos
+docker-compose stop auth-service user-service
 ```
 
-## 📡 Endpoints de API
+### Otros Comandos Útiles
 
-### Auth Service (http://localhost:3001)
-- `POST /api/auth/register` - Registrar usuario
-- `POST /api/auth/login` - Iniciar sesión
-- `POST /api/auth/logout` - Cerrar sesión
-
-### User Service (http://localhost:3002)
-- `GET /api/users/profile` - Obtener perfil del usuario
-- `PUT /api/users/profile` - Actualizar perfil
-- `GET /api/users/:id` - Obtener usuario por ID
-
-### Post Service (http://localhost:3003)
-- `GET /api/posts` - Obtener todas las publicaciones
-- `POST /api/posts` - Crear nueva publicación
-- `GET /api/posts/:id` - Obtener publicación por ID
-- `PUT /api/posts/:id` - Actualizar publicación
-- `DELETE /api/posts/:id` - Eliminar publicación
-
-## 🌐 Acceso a la Aplicación
-
-Una vez ejecutado (local o Docker):
-- **Frontend**: http://localhost:5173
-- **Auth Service**: http://localhost:3001
-- **User Service**: http://localhost:3002
-- **Post Service**: http://localhost:3003
-- **PostgreSQL**: localhost:5435
-
-## 🔧 Scripts Disponibles
-
-### Backend Services
 ```bash
-npm run dev      # Desarrollo con hot reload
-npm run build    # Compilar TypeScript
-npm start        # Ejecutar versión compilada
+# Ver contenedores en ejecución
+docker ps
+
+# Ver todos los contenedores (incluyendo detenidos)
+docker ps -a
+
+# Reiniciar contenedor detenido
+docker start auth-service
+
+# Eliminar contenedor detenido
+docker rm auth-service
+
+# Ver logs en tiempo real
+docker logs -f auth-service
+```
+
+### 🚀 Iniciar Contenedores
+
+#### `docker start` - Iniciar Contenedor Existente
+```bash
+# Iniciar un contenedor detenido
+docker start auth-service
+
+# Iniciar múltiples contenedores
+docker start auth-service user-service post-service
+
+# Iniciar en modo detached (segundo plano)
+docker start -d auth-service
+
+# Iniciar con configuración interactiva
+docker start -i auth-service
+```
+
+**¿Cómo funciona?**
+1. **Verifica estado**: Comprueba que el contenedor existe y está detenido
+2. **Restaura configuración**: Aplica la configuración original del contenedor
+3. **Ejecuta comando**: Ejecuta el CMD/ENTRYPOINT del Dockerfile
+4. **Mantiene datos**: Preserva todos los datos y cambios del contenedor
+
+#### Diferencias importantes:
+- **`docker run`**: Crea un contenedor NUEVO desde una imagen
+- **`docker start`**: Inicia un contenedor EXISTENTE que estaba detenido
+
+#### `docker-compose start` - Múltiples Servicios
+```bash
+# Iniciar todos los servicios
+docker-compose start
+
+# Iniciar servicios específicos
+docker-compose start auth-service user-service
+```
+
+### 🔄 Reiniciar Contenedores
+
+```bash
+# Reiniciar un contenedor en ejecución
+docker restart auth-service
+
+# Reiniciar con tiempo de espera
+docker restart --time=30 auth-service
+
+# Reiniciar múltiples contenedores
+docker restart auth-service user-service post-service
+
+# Reiniciar todos los servicios
+docker-compose restart
+```
+
+## 🚀 Ejecución en Desarrollo
+
+### Microservicios Backend
+```bash
+# Terminal 1 - Auth Service
+cd auth-service
+npm run dev
+
+# Terminal 2 - User Service
+cd user-service
+npm run dev
+
+# Terminal 3 - Post Service
+cd post-service
+npm run dev
 ```
 
 ### Frontend
 ```bash
-npm run dev      # Servidor de desarrollo
-npm run build    # Build para producción
-npm run preview  # Preview del build
+cd red-social-vue
+npm run dev
 ```
 
-## 📁 Estructura del Proyecto
+## 📚 APIs y Documentación
 
-```
-red-social-backend/
-├── auth-service/           # Servicio de autenticación
-│   ├── src/
-│   │   ├── controllers/    # Controladores
-│   │   ├── models/         # Modelos de datos
-│   │   ├── routes/         # Rutas de API
-│   │   ├── middlewares/    # Middlewares
-│   │   └── db/            # Configuración de BD
-│   └── Dockerfile
-├── user-service/          # Servicio de usuarios
-├── post-service/          # Servicio de publicaciones
-├── red-social-vue/        # Frontend Vue.js
-│   ├── src/
-│   │   ├── components/    # Componentes Vue
-│   │   ├── views/         # Páginas/Vistas
-│   │   ├── services/      # Servicios HTTP
-│   │   └── router/        # Configuración de rutas
-│   └── Dockerfile
-├── docker-compose.yml     # Configuración Docker
-└── init-db.sql           # Script inicial de BD
-```
+### Endpoints Principales
 
-## 🐛 Troubleshooting
+#### Auth Service (http://localhost:3001)
+- `POST /api/auth/register` - Registrar usuario
+- `POST /api/auth/login` - Iniciar sesión
+- `GET /api/auth/verify` - Verificar token
 
-### Problemas comunes:
+#### User Service (http://localhost:3002)
+- `GET /api/users/profile/:id` - Obtener perfil
+- `PUT /api/users/profile/:id` - Actualizar perfil
+- `GET /api/users/search` - Buscar usuarios
 
-1. **Error de conexión a BD**: Verificar que PostgreSQL esté ejecutándose y las credenciales sean correctas
-2. **Puerto ocupado**: Cambiar puertos en docker-compose.yml o archivos .env
-3. **CORS errors**: Verificar configuración de CORS en los servicios backend
-4. **JWT errors**: Asegurar que JWT_SECRET sea el mismo en todos los servicios
+#### Post Service (http://localhost:3003)
+- `POST /api/posts` - Crear post
+- `GET /api/posts` - Obtener posts
+- `POST /api/posts/:id/like` - Dar like
 
-### Logs útiles:
+### Documentación Swagger
+- Auth Service: http://localhost:3001/api-docs
+- User Service: http://localhost:3002/api-docs
+- Post Service: http://localhost:3003/api-docs
+
+## 🔧 Scripts Útiles
+
+### Desarrollo
 ```bash
-# Ver logs de un servicio específico
-docker-compose logs auth-service
+# Compilar todos los microservicios
+npm run build:all
 
-# Ver logs en tiempo real
-docker-compose logs -f
+# Ejecutar en modo desarrollo
+npm run dev:all
 ```
+
+### Docker
+```bash
+# Construir todas las imágenes
+docker-compose build
+
+# Ejecutar todos los servicios
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Detener servicios
+docker-compose down
+```
+
+## 🧪 Testing
+
+```bash
+# Ejecutar tests en cada microservicio
+cd auth-service && npm test
+cd ../user-service && npm test
+cd ../post-service && npm test
+```
+
+## 📊 Monitoreo y Logs
+
+### Health Checks
+- Auth Service: http://localhost:3001/
+- User Service: http://localhost:3002/
+- Post Service: http://localhost:3003/
+
+### Logs
+```bash
+# Ver logs de todos los servicios
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f auth-service
+```
+
+## 🔒 Seguridad
+
+- **JWT**: Autenticación con tokens
+- **CORS**: Configurado para desarrollo
+- **Validación**: Middleware de validación en cada servicio
+- **Variables de entorno**: Configuración segura
+
+## 📈 Escalabilidad
+
+- **Arquitectura de microservicios**: Escalado independiente
+- **Docker**: Contenedores aislados
+- **Base de datos**: PostgreSQL optimizado
+- **Load Balancing**: Preparado para balanceadores
 
 ## 🤝 Contribución
 
 1. Fork el proyecto
-2. Crear rama feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit cambios (`git commit -am 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crear Pull Request
+2. Crear rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir Pull Request
 
-## 📄 Licencia
+## 📝 Licencia
 
-Este proyecto está bajo la Licencia ISC.
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 📞 Soporte
+
+Para soporte técnico o preguntas:
+- Crear un issue en GitHub
+- Contactar al equipo de desarrollo
+- Revisar la documentación de cada microservicio
