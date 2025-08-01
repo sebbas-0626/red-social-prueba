@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getProfile, updateProfile, getAllUsers } from '../controllers/userController';
 import { authenticateToken } from '../middlewares/auth';
+import { createUser } from '../controllers/userController';
 
 const router = Router();
 
@@ -153,5 +154,7 @@ router.get('/profile/:id', getProfile);
  *         description: Error del servidor
  */
 router.put('/profile', authenticateToken, updateProfile);
+
+router.post('/', createUser);
 
 export default router;
