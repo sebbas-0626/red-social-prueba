@@ -15,7 +15,7 @@ export const getAll = async () => {
 };
 
 export const getUser = async (userId: number) => {
-  await Post.findAll({
+  return await Post.findAll({
     where: { userId },
     order: [['createdAt', 'DESC']],
   });
