@@ -58,3 +58,25 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error del servidor', error });
   }
 };
+
+// Create user in user-service 
+export const createUser = async (req: Request, res: Response) => {
+  try {
+    const { userId, username, email } = req.body;
+
+    const existingUser = await User.findByPk(userId);
+    if (existingUser) {
+      return res.status(400).json({ message: 'El usuario ya existe en user-service' });
+    }
+
+    const user = await User.create({
+      id: userId,
+      username,
+      email,
+    });
+
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error en user-service al crear el usuario' });
+  }
+};
