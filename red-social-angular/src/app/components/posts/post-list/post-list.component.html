@@ -1,0 +1,58 @@
+<div class="posts-container">
+  <div class="container">
+    <div class="posts-header">
+      <h1>Feed de Posts</h1>
+      <button routerLink="/create-post" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Crear Post
+      </button>
+    </div>
+    
+    <div class="posts-content">
+      <div *ngIf="loading" class="loading">
+        <p>Cargando posts...</p>
+      </div>
+      
+      <div *ngIf="!loading && posts.length === 0" class="no-posts">
+        <p>No hay posts disponibles. ¡Sé el primero en crear uno!</p>
+        <button routerLink="/create-post" class="btn btn-primary">
+          Crear mi primer post
+        </button>
+      </div>
+      
+      <div *ngFor="let post of posts" class="post-card">
+        <div class="post-header">
+          <div class="post-author">
+            <div class="author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-info">
+              <h3>{{ post.author.username }}</h3>
+              <span class="post-date">{{ post.createdAt | date:'medium' }}</span>
+            </div>
+          </div>
+          <div *ngIf="post.authorId === currentUserId" class="post-actions">
+            <button (click)="deletePost(post.id)" class="btn-delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="post-content">
+          <p>{{ post.content }}</p>
+        </div>
+        
+        <div class="post-footer">
+          <button 
+            (click)="toggleLike(post)" 
+            class="btn-like"
+            [class.liked]="post.isLiked"
+          >
+            <i class="fas fa-heart"></i>
+            <span>{{ post.likes }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

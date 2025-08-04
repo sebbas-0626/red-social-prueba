@@ -4,7 +4,13 @@ npm-debug.log
 .gitignore
 README.md
 .env
-.nyc_output
-coverage
-.DS_Store
 dist
+coverage
+.nyc_output
+.DS_Store
+*.log
+.vscode
+.idea
+*.swp
+*.swo
+*~
