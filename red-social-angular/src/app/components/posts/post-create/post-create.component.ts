@@ -24,7 +24,8 @@ export class PostCreateComponent {
     private router: Router
   ) {
     this.postForm = this.fb.group({
-      content: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(environment.maxPostLength)]]
+      content: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(environment.maxPostLength)]],
+      imageUrl: ['']
     });
   }
 
