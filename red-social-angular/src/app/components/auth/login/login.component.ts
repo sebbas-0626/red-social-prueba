@@ -29,20 +29,24 @@ export class LoginComponent {
     });
   }
 
-  onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.loading = true;
-      this.errorMessage = '';
+ onSubmit(): void {
+  if (this.loginForm.valid) {
+    this.loading = true;
+    this.errorMessage = '';
 
-      this.authService.login(this.loginForm.value).subscribe({
-        next: () => {
-          this.router.navigate(['/']);
-        },
-        error: (error) => {
-          this.loading = false;
-          this.errorMessage = error.error?.message || 'Error al iniciar sesión';
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        if (response && response.token) {
+          localStorage.setItem(environment.tokenKey, response.token);
         }
-      });
-    }
+        this.loading = false; // Desactiva loading antes de navegar
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        this.loading = false;
+        this.errorMessage = error.error?.message || 'Error al iniciar sesión';
+      }
+    });
   }
+}
 }
