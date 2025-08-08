@@ -5,33 +5,58 @@
         <h2>Crear Nuevo Post</h2>
         <p>Comparte algo con tu comunidad</p>
       </div>
-      
-      <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="create-post-form">
+
+      <form
+        [formGroup]="postForm"
+        (ngSubmit)="onSubmit()"
+        class="create-post-form"
+      >
         <div class="form-group">
           <label for="content">¿Qué quieres compartir?</label>
-          <textarea 
-            id="content" 
-            formControlName="content" 
+          <textarea
+            id="content"
+            formControlName="content"
             class="form-control post-textarea"
             placeholder="Escribe tu mensaje aquí..."
             rows="4"
           ></textarea>
-          <div *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched" class="error-message">
+          <div
+            *ngIf="
+              postForm.get('content')?.invalid &&
+              postForm.get('content')?.touched
+            "
+            class="error-message"
+          >
             El contenido es requerido y debe tener al menos 1 carácter
           </div>
         </div>
-        
+        <!-- URL para subir imagenes -->
+        <div class="form-group">
+          <label for="imageUrl">URL de la imagen (opcional)</label>
+          <input
+            id="imageUrl"
+            type="text"
+            formControlName="imageUrl"
+            class="form-control"
+            placeholder="https://ejemplo.com/imagen.jpg"
+          />
+        </div>
+
         <div class="form-actions">
           <button type="button" routerLink="/" class="btn btn-secondary">
             Cancelar
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="postForm.invalid || loading">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="postForm.invalid || loading"
+          >
             <span *ngIf="!loading">Publicar</span>
             <span *ngIf="loading">Publicando...</span>
           </button>
         </div>
       </form>
-      
+
       <div *ngIf="errorMessage" class="alert alert-danger">
         {{ errorMessage }}
       </div>
