@@ -26,26 +26,25 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    this.loadUserPosts();
-  }
-
-  loadUserPosts(): void {
-    this.loading = true;
-    this.postsService.getPosts().subscribe({
-      next: (posts) => {
-        this.userPosts = posts.filter(post => post.authorId === this.currentUser?.id);
-        this.totalLikes = this.userPosts.reduce((total, post) => total + post.likes, 0);
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading user posts:', error);
-        this.loading = false;
-      }
-    });
+    console.log('Usuario actual:', this.currentUser); // Depuración
+    if (this.currentUser) {
+      this.loading = true;
+      this.postsService.getUserPosts(Number(this.currentUser.id)).subscribe({
+        next: (posts) => {
+          console.log('Posts del usuario:', posts); // Depuración
+          this.userPosts = posts;
+          this.totalLikes = this.userPosts.reduce((sum, post) => sum + (post.likes || 0), 0);
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading user posts:', error);
+          this.loading = false;
+        }
+      });
+    }
   }
 
   editProfile(): void {
-    // TODO: Implementar edición de perfil
     alert('Función de edición de perfil próximamente');
   }
 
@@ -90,6 +89,6 @@ export class ProfileComponent implements OnInit {
   }
 
   private updateTotalLikes(): void {
-    this.totalLikes = this.userPosts.reduce((total, post) => total + post.likes, 0);
+    this.totalLikes = this.userPosts.reduce((total, post) => total + (post.likes || 0), 0);
   }
 }
