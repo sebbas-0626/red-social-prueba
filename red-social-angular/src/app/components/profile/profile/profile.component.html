@@ -3,7 +3,8 @@
     <div class="profile-card">
       <div class="profile-header">
         <div class="profile-avatar">
-          <i class="fas fa-user"></i>
+          <img *ngIf="currentUser?.profilePicture" [src]="currentUser?.profilePicture" [alt]="currentUser?.username" />
+          <i *ngIf="!currentUser?.profilePicture" class="fas fa-user"></i>
         </div>
         <div class="profile-info">
           <h1>{{ currentUser?.username }}</h1>
@@ -54,10 +55,11 @@
         <div class="post-header">
           <div class="post-author">
             <div class="author-avatar">
-              <i class="fas fa-user"></i>
+              <img *ngIf="currentUser?.profilePicture" [src]="currentUser?.profilePicture" [alt]="currentUser?.username" />
+              <i *ngIf="!currentUser?.profilePicture" class="fas fa-user"></i>
             </div>
             <div class="author-info">
-              <h3>{{ post.author.username }}</h3>
+              <h3>{{ currentUser?.username }}</h3>
               <span class="post-date">{{ post.createdAt | date:'medium' }}</span>
             </div>
           </div>
@@ -70,6 +72,7 @@
         
         <div class="post-content">
           <p>{{ post.content }}</p>
+          <img *ngIf="post.imageUrl" [src]="post.imageUrl" alt="Post image" class="post-image" />
         </div>
         
         <div class="post-footer">
