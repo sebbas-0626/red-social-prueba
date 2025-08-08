@@ -28,19 +28,34 @@ export class PostListComponent implements OnInit {
     this.currentUserId = this.authService.getCurrentUser()?.id || null;
   }
 
-  loadPosts(): void {
-    this.loading = true;
-    this.postsService.getPosts().subscribe({
-      next: (posts) => {
-        this.posts = posts;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading posts:', error);
-        this.loading = false;
-      }
-    });
-  }
+loadPosts(): void {
+  this.loading = true;
+
+  this.postsService.getPosts().subscribe({
+    next: (posts: any[]) => {
+      // console.log('Respuesta de posts:', posts); // Depuración
+
+      this.posts = posts.map(post => ({
+        ...post,
+        author: {
+          id: String(post.userId), // Convertimos a string para cumplir con la interfaz
+          username: `Usuario ${post.userId}`
+        },
+        likes: post.likesCount ?? 0, // 👈 Siempre un número
+        isLiked: false
+      })) as Post[];
+
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error loading posts:', error);
+      this.loading = false;
+    }
+  });
+}
+
+
+
 
   toggleLike(post: Post): void {
     if (post.isLiked) {
