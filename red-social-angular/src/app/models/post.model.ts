@@ -2,8 +2,11 @@ export interface Post {
   id: string;
   content: string;
   authorId: string;
+  userId?: number;   // 
+  likesCount?: number; // 
+  imageUrl?: string;
   author: {
-    id: string;
+    id: string | number; // id del autor, puede ser string o number
     username: string;
     profilePicture?: string;
   };
