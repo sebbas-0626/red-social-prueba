@@ -24,15 +24,18 @@ export class AuthService {
     }
   }
   // This method is used to login a user
-  login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials)
-      .pipe(
-        tap(response => {
-          localStorage.setItem(environment.tokenKey, response.token);
-          localStorage.setItem(environment.userKey, JSON.stringify(response.user));
-          this.currentUserSubject.next(response.user);
-        })
-      );
+
+  login(credentials: { email: string; password: string }) {
+    return this.http.post<{ message: string, token: string, user: any }>(
+      `${this.API_URL}/login`,
+      credentials
+    ).pipe(
+      tap(response => {
+        localStorage.setItem(environment.tokenKey, response.token);
+        localStorage.setItem(environment.userKey, JSON.stringify(response.user));
+        this.currentUserSubject.next(response.user);
+      })
+    );
   }
 
   // This method is used to register a new user
