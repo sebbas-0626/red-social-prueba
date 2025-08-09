@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Post } from '../models/Post';
 import { Like } from '../models/Like';
-import { create, getAll, getUser, like } from '../services/postServices';
+import { create, getAll, getUser, like, deletePost } from '../services/postServices';
 
 interface AuthRequest extends Request {
   userId?: number;
@@ -55,5 +55,22 @@ export const likePost = async (req: AuthRequest, res: Response) => {
     res.json({ message: message });
   } catch (error) {
     res.status(500).json({ message: 'Error del servidor', error });
+  }
+};
+
+export const deletePostController = async (req: AuthRequest, res: Response) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.userId!;
+
+    const { message } = await deletePost(Number(postId), userId);
+
+    res.json({ message });
+  } catch (error: any) {
+    if (error.message === 'Post no encontrado o no tienes permisos para eliminarlo') {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: 'Error del servidor', error });
+    }
   }
 };

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPost, getAllPosts, getUserPosts, likePost } from '../controllers/postController';
+import { createPost, getAllPosts, getUserPosts, likePost, deletePostController } from '../controllers/postController';
 import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
@@ -166,5 +166,40 @@ router.get('/user/:userId', getUserPosts);
  *         description: Error del servidor
  */
 router.post('/:postId/like', authenticateToken, likePost);
+
+/**
+ * @swagger
+ * /api/posts/{postId}:
+ *   delete:
+ *     summary: Eliminar un post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del post a eliminar
+ *     responses:
+ *       200:
+ *         description: Post eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de confirmación
+ *       404:
+ *         description: Post no encontrado o sin permisos
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+router.delete('/:postId', authenticateToken, deletePostController);
 
 export default router;

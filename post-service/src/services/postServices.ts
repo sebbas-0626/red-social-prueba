@@ -36,3 +36,16 @@ export const like = async (userId: number, postId: number) => {
   await Post.increment('likesCount', { where: { id: postId } });
   return { message: 'Like agregado exitosamente' };
 };
+// agregando el metodo deletePost
+export const deletePost = async (postId: number, userId: number) => {
+  const post = await Post.findOne({ where: { id: postId, userId } });
+
+  if (!post) {
+    throw new Error('Post no encontrado o no tienes permisos para eliminarlo');
+  }
+
+  await Like.destroy({ where: { postId } });
+  await post.destroy();
+
+  return { message: 'Post eliminado exitosamente' };
+};
