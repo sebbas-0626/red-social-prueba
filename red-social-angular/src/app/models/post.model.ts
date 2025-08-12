@@ -18,6 +18,7 @@ export interface Post {
 
 export interface CreatePostRequest {
   content: string;
+  imageUrl?: string;
 }
 
 export interface LikePostRequest {
