@@ -1,9 +1,9 @@
 export interface PostInterface {
-    id: number;
+    id?: number;
     userId: number;
     content: string;
     imageUrl?: string;
-    likesCount: number;
+    likesCount?: number;
     createdAt?: Date;
     updatedAt?: Date;
 }
