@@ -75,14 +75,16 @@ export class ProfileComponent implements OnInit {
   }
 
   deletePost(postId: string): void {
-    if (confirm('¿Estás seguro de que quieres eliminar este post?')) {
+    if (confirm('¿Estás seguro de que quieres eliminar este post? Esta acción no se puede deshacer.')) {
       this.postsService.deletePost(postId).subscribe({
-        next: () => {
+        next: (response) => {
           this.userPosts = this.userPosts.filter(post => post.id !== postId);
           this.updateTotalLikes();
+          console.log('Post eliminado exitosamente');
         },
         error: (error) => {
           console.error('Error deleting post:', error);
+          alert('Error al eliminar el post. Por favor, inténtalo de nuevo.');
         }
       });
     }
