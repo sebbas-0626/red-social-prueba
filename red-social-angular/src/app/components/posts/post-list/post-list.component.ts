@@ -16,46 +16,41 @@ import { User } from '../../../models/user.model';
 export class PostListComponent implements OnInit {
   posts: Post[] = [];
   loading = false;
-  currentUserId: string | null = null;
 
   constructor(
     private postsService: PostsService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadPosts();
-    this.currentUserId = this.authService.getCurrentUser()?.id || null;
   }
 
-loadPosts(): void {
-  this.loading = true;
+  loadPosts(): void {
+    this.loading = true;
 
-  this.postsService.getPosts().subscribe({
-    next: (posts: any[]) => {
-      // console.log('Respuesta de posts:', posts); // Depuración
+    this.postsService.getPosts().subscribe({
+      next: (posts: any[]) => {
+        // console.log('Respuesta de posts:', posts); // Depuración
 
-      this.posts = posts.map(post => ({
-        ...post,
-        author: {
-          id: String(post.userId), // Convertimos a string para cumplir con la interfaz
-          username: `Usuario ${post.userId}`
-        },
-        likes: post.likesCount ?? 0, // 👈 Siempre un número
-        isLiked: false
-      })) as Post[];
+        this.posts = posts.map(post => ({
+          ...post,
+          author: {
+            id: String(post.userId), // Convertimos a string para cumplir con la interfaz
+            username: `Usuario ${post.userId}`
+          },
+          likes: post.likesCount ?? 0, // 👈 Siempre un número
+          isLiked: false
+        })) as Post[];
 
-      this.loading = false;
-    },
-    error: (error) => {
-      console.error('Error loading posts:', error);
-      this.loading = false;
-    }
-  });
-}
-
-
-
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading posts:', error);
+        this.loading = false;
+      }
+    });
+  }
 
   toggleLike(post: Post): void {
     if (post.isLiked) {
@@ -81,16 +76,5 @@ loadPosts(): void {
     }
   }
 
-  deletePost(postId: string): void {
-    if (confirm('¿Estás seguro de que quieres eliminar este post?')) {
-      this.postsService.deletePost(postId).subscribe({
-        next: () => {
-          this.posts = this.posts.filter(post => post.id !== postId);
-        },
-        error: (error) => {
-          console.error('Error deleting post:', error);
-        }
-      });
-    }
-  }
+
 }
