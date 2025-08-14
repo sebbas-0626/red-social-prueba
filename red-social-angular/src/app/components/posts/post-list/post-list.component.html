@@ -7,19 +7,19 @@
         Crear Post
       </button>
     </div>
-    
+
     <div class="posts-content">
       <div *ngIf="loading" class="loading">
         <p>Cargando posts...</p>
       </div>
-      
+
       <div *ngIf="!loading && posts.length === 0" class="no-posts">
         <p>No hay posts disponibles. ¡Sé el primero en crear uno!</p>
         <button routerLink="/create-post" class="btn btn-primary">
           Crear mi primer post
         </button>
       </div>
-      
+
       <div *ngFor="let post of posts" class="post-card">
         <div class="post-header">
           <div class="post-author">
@@ -28,26 +28,26 @@
             </div>
             <div class="author-info">
               <h3>{{ post.author.username }}</h3>
-              <span class="post-date">{{ post.createdAt | date:'medium' }}</span>
+              <span class="post-date">{{
+                post.createdAt | date : "medium"
+              }}</span>
             </div>
           </div>
-
-          <!-- Ahora comparamos con post.author.id -->
-          <div *ngIf="post.author.id === currentUserId" class="post-actions">
-            <button (click)="deletePost(post.id)" class="btn-delete">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
         </div>
-        
+
         <div class="post-content">
-          <img *ngIf="post.imageUrl" [src]="post.imageUrl" alt="Imagen del post" class="post-image" />
+          <img
+            *ngIf="post.imageUrl"
+            [src]="post.imageUrl"
+            alt="Imagen del post"
+            class="post-image"
+          />
           <p>{{ post.content }}</p>
         </div>
-        
+
         <div class="post-footer">
-          <button 
-            (click)="toggleLike(post)" 
+          <button
+            (click)="toggleLike(post)"
             class="btn-like"
             [class.liked]="post.isLiked"
           >
