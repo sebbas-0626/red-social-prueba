@@ -12,14 +12,19 @@ export const createPost = async (req: AuthRequest, res: Response) => {
     const { content, imageUrl } = req.body;
     const userId = req.userId!;
 
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ message: 'El contenido del post es requerido' });
+    }
+
     const post = await create({
       userId,
-      content,
-      imageUrl,
-    } as Post);
+      content: content.trim(),
+      imageUrl: imageUrl || undefined,
+    });
 
     res.status(201).json(post);
   } catch (error) {
+    console.error('Error creating post:', error);
     res.status(500).json({ message: 'Error del servidor', error });
   }
 };
