@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
+import { UserAttributes } from '../types/auth.types';
 
 /**
  * @swagger
@@ -30,13 +31,6 @@ import { sequelize } from '../db/connection';
  *         email: john@example.com
  *         password: hashedpassword
  */
-export interface UserAttributes {
-  id?: number;
-  username: string;
-  email: string;
-  password: string;
-}
-
 export class User extends Model<UserAttributes> implements UserAttributes {
   public id!: number;
   public username!: string;
