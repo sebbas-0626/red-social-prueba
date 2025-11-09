@@ -20,7 +20,7 @@ setupSwagger(app);
 app.use('/api/users', userRoutes);
 
 app.get('/', (_req, res) => {
-  res.send('User service funcionando correctamente');
+  res.send('✅User service funcionando correctamente');
 });
 
 app.listen(PORT, async () => {
