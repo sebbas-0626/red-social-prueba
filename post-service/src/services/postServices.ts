@@ -1,4 +1,4 @@
-import { Post, PostAttributes } from '../models/Post';
+import { Post } from '../models/Post';
 import { Like } from '../models/Like';
 import { Op } from 'sequelize';
 import { PostInterface } from '../types/post.model';

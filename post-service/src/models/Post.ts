@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
+import { PostAttributes } from '../types/post.model';
 
 /**
  * @swagger
@@ -35,16 +36,6 @@ import { sequelize } from '../db/connection';
  *           format: date-time
  *           description: Fecha de última actualización
  */
-
-export interface PostAttributes {
-  id?: number;
-  userId: number;
-  content: string;
-  imageUrl?: string;
-  likesCount?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 export class Post extends Model<PostAttributes> implements PostAttributes {
   public id!: number;

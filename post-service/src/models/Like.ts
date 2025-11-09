@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
+import { LikeAttributes } from '../types/post.model';
 
 /**
  * @swagger
@@ -25,13 +26,6 @@ import { sequelize } from '../db/connection';
  *           format: date-time
  *           description: Fecha de creación del like
  */
-
-export interface LikeAttributes {
-  id?: number;
-  userId: number;
-  postId: number;
-  createdAt?: Date;
-}
 
 export class Like extends Model<LikeAttributes> implements LikeAttributes {
   public id!: number;

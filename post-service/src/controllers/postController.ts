@@ -2,10 +2,7 @@ import { Request, Response } from 'express';
 import { Post } from '../models/Post';
 import { Like } from '../models/Like';
 import { create, getAll, getUser, like, deletePost } from '../services/postServices';
-
-interface AuthRequest extends Request {
-  userId?: number;
-}
+import { AuthRequest } from '../types/post.model';
 
 export const createPost = async (req: AuthRequest, res: Response) => {
   try {
