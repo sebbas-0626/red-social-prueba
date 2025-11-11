@@ -77,7 +77,7 @@ Contiene todo el código TypeScript del microservicio.
 - **Función**: Define qué archivos NO se suben al repositorio Git
 - **Excluye**: node_modules, dist, archivos de entorno
 
-## 🚀 Scripts Disponibles
+## 🚀 Scripts Disponibles local
 
 ```bash
 npm run dev    # Ejecuta en modo desarrollo con hot-reload
