@@ -119,3 +119,40 @@ docker run -p 3001:3001 auth-service
 
 Una vez ejecutado el servicio, la documentación estará disponible en:
 `http://localhost:3001/api-docs` 
+
+##flujo auth-service - user-service
+
+Usuario
+  │
+  │ POST /register
+  ▼
+┌──────────────────┐
+│  AUTH-SERVICE    │ 1. Recibe registro
+│                  │ 2. Crea en auth_db
+│                  │ 3. Llama a user-service
+└────────┬─────────┘
+         │
+         │ POST http://user-service:3002/api/users
+         ▼
+    ┌──────────────────┐
+    │  USER-SERVICE    │ 4. Recibe notificación
+    │                  │ 5. Crea perfil en user_db
+    └──────────────────┘
+
+## ahora 
+Usuario registra
+       ↓
+┌──────────────────┐
+│  AUTH-SERVICE    │ 1. Crea usuario en auth_db
+│                  │ 2. Genera token
+│                  │ 3. ⭐ Llama a USER-SERVICE ⭐
+└────────┬─────────┘
+         │
+         │ POST http://user-service:3002/api/users
+         │ Body: { userId, username, email }
+         ▼
+    ┌──────────────────┐
+    │  USER-SERVICE    │ 4. Crea perfil en user_db
+    └──────────────────┘
+
+    
