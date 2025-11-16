@@ -32,27 +32,27 @@ const publicGuard = () => {
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./components/posts/post-list/post-list.component').then(m => m.PostListComponent),
+    loadComponent: () => import('./pages/posts/post-list/post-list.component').then(m => m.PostListComponent),
     canActivate: [authGuard]
   },
   {
     path: 'login',
-    loadComponent: () => import('./components/auth/login/login.component').then(m => m.LoginComponent),
+    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent),
     canActivate: [publicGuard]
   },
   {
     path: 'register',
-    loadComponent: () => import('./components/auth/register/register.component').then(m => m.RegisterComponent),
+    loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent),
     canActivate: [publicGuard]
   },
   {
     path: 'profile',
-    loadComponent: () => import('./components/profile/profile/profile.component').then(m => m.ProfileComponent),
+    loadComponent: () => import('./pages/profile/profile/profile.component').then(m => m.ProfileComponent),
     canActivate: [authGuard]
   },
   {
     path: 'create-post',
-    loadComponent: () => import('./components/posts/post-create/post-create.component').then(m => m.PostCreateComponent),
+    loadComponent: () => import('./pages/posts/post-create/post-create.component').then(m => m.PostCreateComponent),
     canActivate: [authGuard]
   },
   {
