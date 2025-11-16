@@ -12,6 +12,12 @@ export interface CreateUserData {
     email: string;
 }
 
+export interface RegisterData {
+    username: string;
+    email: string;
+    password: string;
+}
+
 export interface AuthRequest extends Request {
     userId?: number;
 }
@@ -21,6 +27,7 @@ export interface UserAttributes {
     id?: number;
     username: string;
     email: string;
+    password?: string;
     bio?: string;
     avatar?: string;
     followersCount?: number;

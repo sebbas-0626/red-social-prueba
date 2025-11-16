@@ -1,5 +1,6 @@
 import { User } from '../models/User';
-import { UpdateProfileData, CreateUserData } from '../types/user.types';
+import { UpdateProfileData, CreateUserData, RegisterData } from '../types/user.types';
+import bcrypt from 'bcryptjs';
 
 // Get user profile by ID
 export const getUserProfile = async (userId: number) => {
@@ -53,7 +54,49 @@ export const createUserInService = async (data: CreateUserData) => {
         id: userId,
         username,
         email,
+        password: '', // Password vacío para usuarios creados desde auth-service (legacy)
     });
+
+    return user;
+};
+
+// Register new user with password (endpoint público)
+export const registerUser = async (data: RegisterData) => {
+    const { username, email, password } = data;
+
+    // Verificar si el usuario ya existe
+    const existingUser = await User.findOne({
+        where: { email }
+    });
+
+    if (existingUser) {
+        throw new Error('El usuario ya existe');
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear usuario
+    const user = await User.create({
+        username,
+        email,
+        password: hashedPassword,
+    });
+
+    // Retornar sin password
+    const { password: _, ...userWithoutPassword } = user.toJSON();
+    return userWithoutPassword;
+};
+
+// Get user by email (para auth-service)
+export const getUserByEmail = async (email: string) => {
+    const user = await User.findOne({
+        where: { email }
+    });
+
+    if (!user) {
+        throw new Error('Usuario no encontrado');
+    }
 
     return user;
 };

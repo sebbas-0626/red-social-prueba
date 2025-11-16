@@ -6,6 +6,7 @@ export class User extends Model<UserAttributes> implements UserAttributes {
   public id!: number;
   public username!: string;
   public email!: string;
+  public password?: string;
   public bio?: string;
   public avatar?: string;
   public followersCount!: number;
@@ -30,6 +31,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     bio: {
       type: DataTypes.TEXT,

@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import { getProfile, updateProfile, getAllUsers } from '../controllers/userController';
+import { getProfile, updateProfile, getAllUsers, createUser, register, getByEmail } from '../controllers/userController';
 import { authenticateToken } from '../middlewares/auth';
-import { createUser } from '../controllers/userController';
 
 const router = Router();
 
@@ -46,6 +45,62 @@ const router = Router();
  *           format: date-time
  *           description: Fecha de última actualización
  */
+
+/**
+ * @swagger
+ * /api/users/register:
+ *   post:
+ *     summary: Registrar nuevo usuario
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuario registrado exitosamente
+ *       400:
+ *         description: El usuario ya existe
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/register', register);
+
+/**
+ * @swagger
+ * /api/users/by-email/{email}:
+ *   get:
+ *     summary: Obtener usuario por email (interno)
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
+router.get('/by-email/:email', getByEmail);
 
 /**
  * @swagger
