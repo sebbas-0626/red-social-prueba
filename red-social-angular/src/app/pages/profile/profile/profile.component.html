@@ -2,11 +2,18 @@
   <div class="container">
     <div class="profile-card">
       <div class="profile-header">
-        <div class="profile-avatar">
-          <img *ngIf="currentUser?.profilePicture" [src]="currentUser?.profilePicture" [alt]="currentUser?.username" />
-          <i *ngIf="!currentUser?.profilePicture" class="fas fa-user"></i>
-        </div>
-        <div class="profile-info">
+        <!-- <div class="profile-avatar">
+          <app-avatar 
+            [src]="currentUser?.profilePicture || null" 
+            [alt]="currentUser?.username || ''"
+          />
+        </div> -->
+        
+        <div class="flex items-start gap-4">
+         <app-avatar 
+            [src]="currentUser?.profilePicture || null" 
+            [alt]="currentUser?.username || ''"
+          />
           <h1>{{ currentUser?.username }}</h1>
           <p class="profile-email">{{ currentUser?.email }}</p>
           <p class="profile-name" *ngIf="currentUser?.firstName || currentUser?.lastName">
@@ -55,8 +62,10 @@
         <div class="post-header">
           <div class="post-author">
             <div class="author-avatar">
-              <img *ngIf="currentUser?.profilePicture" [src]="currentUser?.profilePicture" [alt]="currentUser?.username" />
-              <i *ngIf="!currentUser?.profilePicture" class="fas fa-user"></i>
+              <app-avatar 
+                [src]="currentUser?.profilePicture || null" 
+                [alt]="currentUser?.username || ''"
+              />
             </div>
             <div class="author-info">
               <h3>{{ currentUser?.username }}</h3>

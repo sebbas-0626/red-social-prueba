@@ -5,11 +5,12 @@ import { AuthService } from '../../../services/auth.service';
 import { PostsService } from '../../../services/posts.service';
 import { User } from '../../../models/user.model';
 import { Post } from '../../../models/post.model';
+import { AvatarComponent } from '../../../components/shared/avatar/avatar.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AvatarComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
