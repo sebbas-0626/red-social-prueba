@@ -1,0 +1,27 @@
+
+# Build output
+dist/
+build/
+
+# Environment variables
+.env
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo 
+# readme.md
+README.md
