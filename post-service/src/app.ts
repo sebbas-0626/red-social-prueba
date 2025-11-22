@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { sequelize } from './db/connection';
-import postRoutes from './routes/postRoutes';
+import postRoutes from './routes/post.routes';
 import { setupSwagger } from './config/swagger';
 import './models/Post';
 import './models/Like';

@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { LoginData, AuthResponse } from '../types/auth.types';
+import { LoginData, AuthResponse } from '../interfaces/auth.interface';
 import axios from 'axios';
 
 // Detecta automáticamente si está en Docker o desarrollo local

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Post } from '../models/Post';
 import { Like } from '../models/Like';
-import { create, getAll, getUser, like, deletePost } from '../services/postServices';
-import { AuthRequest } from '../types/post.model';
+import { create, getAll, getUser, like, deletePost } from '../services/post.services';
+import { AuthRequest } from '../interfaces/post.interface';
 
 export const createPost = async (req: AuthRequest, res: Response) => {
   try {

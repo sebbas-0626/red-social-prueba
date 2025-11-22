@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
-import { LikeAttributes } from '../types/post.model';
+import { LikeAttributes } from '../interfaces/post.interface';
 
 /**
  * @swagger

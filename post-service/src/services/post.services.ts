@@ -1,7 +1,7 @@
 import { Post } from '../models/Post';
 import { Like } from '../models/Like';
 import { Op } from 'sequelize';
-import { PostInterface } from '../types/post.model';
+import { PostInterface } from '../interfaces/post.interface';
 
 export const create = async (data: PostInterface) => {
   return await Post.create(data);

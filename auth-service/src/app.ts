@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { sequelize } from './db/connection';
-import authRoutes from './routes/authRoutes';
+import authRoutes from './routes/auth.routes';
 import { setupSwagger } from './config/swagger';
 
 dotenv.config();

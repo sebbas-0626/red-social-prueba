@@ -1,5 +1,5 @@
-import { User } from '../models/User';
-import { UpdateProfileData, CreateUserData, RegisterData } from '../types/user.types';
+import { User } from '../models/user.model';
+import { UpdateProfileData, CreateUserData, RegisterData } from '../interfaces/user.interface';
 import bcrypt from 'bcryptjs';
 
 // Get user profile by ID

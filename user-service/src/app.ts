@@ -2,9 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { sequelize } from './db/connection';
-import userRoutes from './routes/userRoutes';
+import userRoutes from './routes/user.routes';
 import { setupSwagger } from './config/swagger';
-import './models/User';
+import './models/user.model';
 
 dotenv.config();
 
@@ -27,7 +27,7 @@ app.listen(PORT, async () => {
   console.log(`🚀 Servidor User iniciado en el puerto ${PORT}`);
   try {
     await sequelize.authenticate();
-    await sequelize.sync();
+    await sequelize.sync({ alter: true }); // Cambiado de sync() a sync({ alter: true })
     console.log('✅ Base de datos conectada y sincronizada');
   } catch (error) {
     console.error('❌ Error con la base de datos:', error);

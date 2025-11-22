@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { getUserProfile, updateUserProfile, getUsers, createUserInService, registerUser, getUserByEmail } from '../services/userService';
-import { AuthRequest } from '../types/user.types';
+import { getUserProfile, updateUserProfile, getUsers, createUserInService, registerUser, getUserByEmail } from '../services/user.service';
+import { AuthRequest } from '../interfaces/user.interface';
 
 export const getProfile = async (req: AuthRequest, res: Response) => {
   try {

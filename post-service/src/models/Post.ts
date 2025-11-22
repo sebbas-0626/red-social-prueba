@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
-import { PostAttributes } from '../types/post.model';
+import { PostAttributes } from '../interfaces/post.interface';
 
 /**
  * @swagger
