@@ -2,3 +2,4 @@
 CREATE DATABASE auth_service;
 CREATE DATABASE user_service;
 CREATE DATABASE post_service;
+CREATE DATABASE interaction_service;
