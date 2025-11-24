@@ -1,6 +1,4 @@
 import { Post } from '../models/Post';
-import { Like } from '../models/Like';
-import { Op } from 'sequelize';
 import { PostInterface } from '../interfaces/post.interface';
 
 export const create = async (data: PostInterface) => {
@@ -21,22 +19,14 @@ export const getUser = async (userId: number) => {
   });
 };
 
-export const like = async (userId: number, postId: number) => {
-  const existingLike = await Like.findOne({
-    where: { userId, postId }
-  });
-
-  if (existingLike) {
-    await existingLike.destroy();
+export const updateLikesCount = async (postId: number, change: number) => {
+  if (change > 0) {
+    await Post.increment('likesCount', { where: { id: postId } });
+  } else {
     await Post.decrement('likesCount', { where: { id: postId } });
-    return { message: 'Like removido exitosamente' };
   }
-
-  await Like.create({ userId, postId: Number(postId) });
-  await Post.increment('likesCount', { where: { id: postId } });
-  return { message: 'Like agregado exitosamente' };
 };
-// agregando el metodo deletePost
+
 export const deletePost = async (postId: number, userId: number) => {
   const post = await Post.findOne({ where: { id: postId, userId } });
 
@@ -44,7 +34,6 @@ export const deletePost = async (postId: number, userId: number) => {
     throw new Error('Post no encontrado o no tienes permisos para eliminarlo');
   }
 
-  await Like.destroy({ where: { postId } });
   await post.destroy();
 
   return { message: 'Post eliminado exitosamente' };
