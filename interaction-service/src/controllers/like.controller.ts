@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import { toggleLike, getLikesByPost, checkUserLike, updatePostLikesCount } from '../services/interaction.service';
-import { AuthRequest } from '../interfaces/interaction.interface';
+import { toggleLike, getLikesByPost, checkUserLike, updatePostLikesCount, deleteLikesByPost } from '../services/like.service';
+import { AuthRequest } from '../interfaces/like.interface';
 
 // Controlador para dar like o quitar like a un post
 export const likePost = async (req: AuthRequest, res: Response) => {
@@ -51,6 +51,20 @@ export const checkLike = async (req: AuthRequest, res: Response) => {
 
         res.json({ hasLiked });
     } catch (error) {
+        res.status(500).json({ message: 'Error del servidor', error });
+    }
+};
+
+// Controlador para eliminar todos los likes de un post (usado cuando se elimina el post)
+export const deletePostLikes = async (req: AuthRequest, res: Response) => {
+    try {
+        const { postId } = req.params;
+
+        await deleteLikesByPost(Number(postId));
+
+        res.json({ message: 'Likes del post eliminados exitosamente' });
+    } catch (error) {
+        console.error('Error en deletePostLikes:', error);
         res.status(500).json({ message: 'Error del servidor', error });
     }
 };

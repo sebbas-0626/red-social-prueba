@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { likePost, getPostLikes, checkLike } from '../controllers/interaction.controller';
+import { likePost, getPostLikes, checkLike, deletePostLikes } from '../controllers/interaction.controller';
 import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
@@ -127,5 +127,38 @@ router.get('/posts/:postId/likes', getPostLikes);
  *         description: Error del servidor
  */
 router.get('/posts/:postId/check-like', authenticateToken, checkLike);
+
+/**
+ * @swagger
+ * /api/interactions/posts/{postId}/likes:
+ *   delete:
+ *     summary: Eliminar todos los likes de un post
+ *     description: Endpoint interno usado cuando se elimina un post
+ *     tags: [Interactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del post
+ *     responses:
+ *       200:
+ *         description: Likes eliminados exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+router.delete('/posts/:postId/likes', authenticateToken, deletePostLikes);
 
 export default router;

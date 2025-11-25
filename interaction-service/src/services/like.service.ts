@@ -2,7 +2,7 @@ import { Like } from '../models/Like';
 import axios from 'axios';
 
 // URL del servicio de posts
-const POST_SERVICE_URL = process.env.POST_SERVICE_URL || 'http://post-service:3003';
+const POST_SERVICE_URL = process.env.POST_SERVICE_URL || process.env.POST_SERVICE_URL_P;
 
 export const toggleLike = async (userId: number, postId: number) => {
     const existingLike = await Like.findOne({
@@ -54,8 +54,12 @@ export const updatePostLikesCount = async (postId: number, change: number) => {
     try {
         const updateUrl = `${POST_SERVICE_URL}/api/posts/${postId}/likes-count`;
         await axios.patch(updateUrl, { change });
-    } catch (error) {
-        console.error('Error al actualizar contador de likes:', error);
+    } catch (error: any) {
+        console.error('Error al actualizar contador de likes:', {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data
+        });
         throw error;
     }
 };
