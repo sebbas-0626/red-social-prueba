@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { likePost, getPostLikes, checkLike, deletePostLikes } from '../controllers/interaction.controller';
+import { likePost, getPostLikes, checkLike, deletePostLikes } from '../controllers/like.controller';
 import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
