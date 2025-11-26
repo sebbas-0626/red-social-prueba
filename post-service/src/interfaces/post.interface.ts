@@ -25,10 +25,3 @@ export interface PostAttributes {
     createdAt?: Date;
     updatedAt?: Date;
 }
-
-export interface LikeAttributes {
-    id?: number;
-    userId: number;
-    postId: number;
-    createdAt?: Date;
-}

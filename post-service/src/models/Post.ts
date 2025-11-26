@@ -24,9 +24,6 @@ import { PostAttributes } from '../interfaces/post.interface';
  *         userId:
  *           type: integer
  *           description: ID del usuario que creó el post
- *         likesCount:
- *           type: integer
- *           description: Número de likes del post
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -38,13 +35,13 @@ import { PostAttributes } from '../interfaces/post.interface';
  */
 
 export class Post extends Model<PostAttributes> implements PostAttributes {
-  public id!: number;
+  public id?: number;
   public userId!: number;
   public content!: string;
   public imageUrl?: string;
-  public likesCount!: number;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public likesCount?: number;
+  public readonly createdAt?: Date;
+  public readonly updatedAt?: Date;
 }
 
 Post.init(
@@ -68,6 +65,7 @@ Post.init(
     },
     likesCount: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       defaultValue: 0,
     },
   },

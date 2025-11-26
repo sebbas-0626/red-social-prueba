@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPost, getAllPosts, getUserPosts, deletePostController, updateLikesCount } from '../controllers/post.controller';
+import { createPost, getAllPosts, getUserPosts, deletePostController, updatePostController, updateLikesCount } from '../controllers/post.controller';
 import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
@@ -118,6 +118,53 @@ router.get('/user/:userId', getUserPosts);
 /**
  * @swagger
  * /api/posts/{postId}:
+ *   put:
+ *     summary: Actualizar un post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del post a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 description: Nuevo contenido del post
+ *               imageUrl:
+ *                 type: string
+ *                 description: Nueva URL de la imagen (opcional)
+ *     responses:
+ *       200:
+ *         description: Post actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 post:
+ *                   $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Datos inválidos
+ *       404:
+ *         description: Post no encontrado o sin permisos
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
  *   delete:
  *     summary: Eliminar un post
  *     tags: [Posts]
@@ -148,6 +195,7 @@ router.get('/user/:userId', getUserPosts);
  *       500:
  *         description: Error del servidor
  */
+router.put('/:postId', authenticateToken, updatePostController);
 router.delete('/:postId', authenticateToken, deletePostController);
 
 /**
