@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPost, getAllPosts, getUserPosts, likePost, deletePostController } from '../controllers/post.controller';
+import { createPost, getAllPosts, getUserPosts, deletePostController, updateLikesCount } from '../controllers/post.controller';
 import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
@@ -34,25 +34,6 @@ const router = Router();
  *           type: string
  *           format: date-time
  *           description: Fecha de última actualización
- *     Like:
- *       type: object
- *       required:
- *         - userId
- *         - postId
- *       properties:
- *         id:
- *           type: integer
- *           description: ID único del like
- *         userId:
- *           type: integer
- *           description: ID del usuario que dio like
- *         postId:
- *           type: integer
- *           description: ID del post que recibió like
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: Fecha de creación del like
  */
 
 /**
@@ -136,39 +117,6 @@ router.get('/user/:userId', getUserPosts);
 
 /**
  * @swagger
- * /api/posts/{postId}/like:
- *   post:
- *     summary: Dar like a un post
- *     tags: [Likes]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del post
- *     responses:
- *       200:
- *         description: Like procesado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Mensaje de confirmación
- *       401:
- *         description: No autorizado
- *       500:
- *         description: Error del servidor
- */
-router.post('/:postId/like', authenticateToken, likePost);
-
-/**
- * @swagger
  * /api/posts/{postId}:
  *   delete:
  *     summary: Eliminar un post
@@ -201,5 +149,40 @@ router.post('/:postId/like', authenticateToken, likePost);
  *         description: Error del servidor
  */
 router.delete('/:postId', authenticateToken, deletePostController);
+
+/**
+ * @swagger
+ * /api/posts/{postId}/likes-count:
+ *   patch:
+ *     summary: Actualizar contador de likes de un post (uso interno)
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del post
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - change
+ *             properties:
+ *               change:
+ *                 type: integer
+ *                 description: Cantidad a incrementar (+1) o decrementar (-1)
+ *     responses:
+ *       200:
+ *         description: Contador actualizado
+ *       400:
+ *         description: Datos inválidos
+ *       500:
+ *         description: Error del servidor
+ */
+router.patch('/:postId/likes-count', updateLikesCount);
 
 export default router;
