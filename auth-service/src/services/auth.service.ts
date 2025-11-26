@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { LoginData, AuthResponse } from '../interfaces/auth.interface';
+import { LoginData, AuthResponse, UserAttributes } from '../interfaces/auth.interface';
 import axios from 'axios';
 
 // Detecta automáticamente si está en Docker o desarrollo local
@@ -21,14 +21,14 @@ export const loginUser = async (data: LoginData): Promise<AuthResponse> => {
             timeout: 5000,
         });
 
-        const user = response.data;
+        const user: UserAttributes = response.data;
 
         if (!user) {
             throw new Error('Credenciales inválidas');
         }
 
         // Validar password
-        const isValidPassword = await bcrypt.compare(password, user.password);
+        const isValidPassword: boolean = await bcrypt.compare(password, user.password);
 
         if (!isValidPassword) {
             throw new Error('Credenciales inválidas');
@@ -45,7 +45,7 @@ export const loginUser = async (data: LoginData): Promise<AuthResponse> => {
             message: 'Inicio de sesión exitoso',
             token,
             user: {
-                id: user.id,
+                id: user.id!,
                 username: user.username,
                 email: user.email,
             },
