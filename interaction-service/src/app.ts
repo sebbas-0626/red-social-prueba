@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { sequelize } from './db/connection';
-import interactionRoutes from './routes/interaction.routes';
+import interactionRoutes from './routes/like.routes';
 import { setupSwagger } from './config/swagger';
 import './models/Like';
 

@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { Post } from '../models/Post';
-import { Like } from '../models/Like';
-import { create, getAll, getUser, like, deletePost } from '../services/post.services';
+import { create, getAll, getUser, deletePost, updatePost, updateLikesCounter } from '../services/post.services';
 import { AuthRequest } from '../interfaces/post.interface';
 
 export const createPost = async (req: AuthRequest, res: Response) => {
@@ -47,19 +45,6 @@ export const getUserPosts = async (req: Request, res: Response) => {
   }
 };
 
-export const likePost = async (req: AuthRequest, res: Response) => {
-  try {
-    const { postId } = req.params;
-    const userId = req.userId!;
-
-    const {message} = await like(Number(userId), Number(postId));
-
-    res.json({ message: message });
-  } catch (error) {
-    res.status(500).json({ message: 'Error del servidor', error });
-  }
-};
-
 export const deletePostController = async (req: AuthRequest, res: Response) => {
   try {
     const { postId } = req.params;
@@ -70,6 +55,57 @@ export const deletePostController = async (req: AuthRequest, res: Response) => {
     res.json({ message });
   } catch (error: any) {
     if (error.message === 'Post no encontrado o no tienes permisos para eliminarlo') {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: 'Error del servidor', error });
+    }
+  }
+};
+
+export const updatePostController = async (req: AuthRequest, res: Response) => {
+  try {
+    const { postId } = req.params;
+    const { content, imageUrl } = req.body;
+    const userId = req.userId!;
+
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ message: 'El contenido del post es requerido' });
+    }
+
+    const updatedPost = await updatePost(Number(postId), userId, content, imageUrl);
+
+    res.json({
+      message: 'Post actualizado exitosamente',
+      post: updatedPost
+    });
+  } catch (error: any) {
+    if (error.message === 'Post no encontrado o no tienes permisos para editarlo') {
+      res.status(404).json({ message: error.message });
+    } else {
+      console.error('Error en updatePostController:', error);
+      res.status(500).json({ message: 'Error del servidor', error });
+    }
+  }
+};
+
+export const updateLikesCount = async (req: Request, res: Response) => {
+  try {
+    const { postId } = req.params;
+    const { change } = req.body;
+
+    if (typeof change !== 'number') {
+      return res.status(400).json({ message: 'El campo "change" debe ser un número' });
+    }
+
+    const result = await updateLikesCounter(Number(postId), change);
+
+    res.json({ 
+      message: 'Contador de likes actualizado', 
+      postId: Number(postId), 
+      likesCount: result.likesCount 
+    });
+  } catch (error: any) {
+    if (error.message === 'Post no encontrado') {
       res.status(404).json({ message: error.message });
     } else {
       res.status(500).json({ message: 'Error del servidor', error });
