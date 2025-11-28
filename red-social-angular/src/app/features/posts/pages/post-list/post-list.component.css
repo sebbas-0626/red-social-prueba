@@ -1,0 +1,20 @@
+.posts-container {
+	padding: 20px 0;
+}
+
+.posts-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 30px;
+}
+
+.posts-header h1 {
+	color: #333;
+	font-size: 32px;
+	font-weight: 600;
+}
+
+.posts-content {
+	max-width: 800px;
+	margin: 0 auto;

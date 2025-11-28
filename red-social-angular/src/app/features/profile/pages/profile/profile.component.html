@@ -1,0 +1,33 @@
+<div class="profile-container">
+	<div class="container">
+		<div class="profile-card">
+			<div class="profile-header">
+				<div class="flex items-start gap-4">
+				 <app-avatar 
+						[src]="currentUser?.profilePicture || null" 
+						[alt]="currentUser?.username || ''"
+					/>
+					<h1>{{ currentUser?.username }}</h1>
+					<p class="profile-email">{{ currentUser?.email }}</p>
+					<p class="profile-name" *ngIf="currentUser?.firstName || currentUser?.lastName">
+						{{ currentUser?.firstName }} {{ currentUser?.lastName }}
+					</p>
+					<p class="profile-bio" *ngIf="currentUser?.bio">{{ currentUser?.bio }}</p>
+					<p class="profile-joined">
+						Miembro desde {{ currentUser?.createdAt | date:'MMMM yyyy' }}
+					</p>
+				</div>
+			</div>
+      
+			<div class="profile-actions">
+				<button class="btn btn-primary" (click)="editProfile()">
+					<i class="fas fa-edit"></i>
+					Editar Perfil
+				</button>
+			</div>
+		</div>
+    
+		<div class="profile-stats">
+			<div class="stat-card">
+				<h3>Posts</h3>
+				<p class="stat-number">{{ userPosts.length }}</p>

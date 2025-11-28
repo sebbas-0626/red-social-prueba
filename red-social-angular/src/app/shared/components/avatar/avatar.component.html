@@ -1,0 +1,23 @@
+<div
+	class="bg-black relative flex h-20 w-20 shrink-0 overflow-hidden rounded-full"
+	[ngClass]="className"
+>
+	<!-- Imagen -->
+	<img
+		*ngIf="src && !hasError"
+		[src]="src"
+		[alt]="alt"
+		class="aspect-square h-full w-full"
+		(error)="onError()"
+	/>
+
+	<!-- Fallback -->
+	<div
+		*ngIf="!src || hasError"
+		class="flex h-full w-full items-center justify-center rounded-full bg-muted"
+	>
+		<span class="text-sm font-medium text-gray-500">
+			{{ alt ? alt[0].toUpperCase() : "?" }}
+		</span>
+	</div>
+</div>

@@ -1,0 +1,12 @@
+/* Add your CSS styles here */
+ 
+ .register-container {
+	 display: flex;
+	 flex-direction: column;
+	 align-items: center;
+ }
+ 
+ .register-button {
+	 background-color: blue;
+	 color: white;
+ }

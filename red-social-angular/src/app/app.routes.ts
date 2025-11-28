@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './features/auth/services/auth.service';
 import { Router } from '@angular/router';
 
 // Guard para rutas protegidas
@@ -32,27 +32,27 @@ const publicGuard = () => {
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./pages/posts/post-list/post-list.component').then(m => m.PostListComponent),
+    loadComponent: () => import('./features/posts/pages/post-list/post-list.component').then(m => m.PostListComponent),
     canActivate: [authGuard]
   },
   {
     path: 'login',
-    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent),
+    loadComponent: () => import('./features/auth/pages/login/login.component').then(m => m.LoginComponent),
     canActivate: [publicGuard]
   },
   {
     path: 'register',
-    loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent),
+    loadComponent: () => import('./features/auth/pages/register/register.component').then(m => m.RegisterComponent),
     canActivate: [publicGuard]
   },
   {
     path: 'profile',
-    loadComponent: () => import('./pages/profile/profile/profile.component').then(m => m.ProfileComponent),
+    loadComponent: () => import('./features/profile/pages/profile/profile.component').then(m => m.ProfileComponent),
     canActivate: [authGuard]
   },
   {
     path: 'create-post',
-    loadComponent: () => import('./pages/posts/post-create/post-create.component').then(m => m.PostCreateComponent),
+    loadComponent: () => import('./features/posts/pages/post-create/post-create.component').then(m => m.PostCreateComponent),
     canActivate: [authGuard]
   },
   {
