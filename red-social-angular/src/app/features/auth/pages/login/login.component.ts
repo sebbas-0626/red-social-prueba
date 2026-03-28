@@ -36,9 +36,6 @@ export class LoginComponent {
 
 		this.authService.login(this.loginForm.value).subscribe({
 			next: (response) => {
-				if (response && response.token) {
-					localStorage.setItem(environment.tokenKey, response.token);
-				}
 				this.loading = false; // Desactiva loading antes de navegar
 				this.router.navigate(['/']);
 			},

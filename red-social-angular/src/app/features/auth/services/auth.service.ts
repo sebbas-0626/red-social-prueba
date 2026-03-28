@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User, LoginRequest, RegisterRequest, AuthResponse } from '../../../core/models/user.model';
@@ -11,6 +11,7 @@ export class AuthService {
 	private readonly API_URL = environment.authServiceUrl;
 	private currentUserSubject = new BehaviorSubject<User | null>(null);
 	public currentUser$ = this.currentUserSubject.asObservable();
+	isAuthenticatedSignal = signal(false);
 
 	constructor(private http: HttpClient) {
 		this.loadStoredUser();
@@ -21,12 +22,15 @@ export class AuthService {
 		const user = localStorage.getItem(environment.userKey);
 		if (token && user) {
 			this.currentUserSubject.next(JSON.parse(user));
+			this.isAuthenticatedSignal.set(true);
+		} else {
+			this.isAuthenticatedSignal.set(false);
 		}
 	}
 	// This method is used to login a user
 
-	login(credentials: { email: string; password: string }) {
-		return this.http.post<{ message: string, token: string, user: any }>(
+	login(credentials: LoginRequest): Observable<AuthResponse> {
+		return this.http.post<AuthResponse>(
 			`${this.API_URL}/login`,
 			credentials
 		).pipe(
@@ -34,6 +38,7 @@ export class AuthService {
 				localStorage.setItem(environment.tokenKey, response.token);
 				localStorage.setItem(environment.userKey, JSON.stringify(response.user));
 				this.currentUserSubject.next(response.user);
+				this.isAuthenticatedSignal.set(true);
 			})
 		);
 	}
@@ -46,6 +51,7 @@ export class AuthService {
 					localStorage.setItem(environment.tokenKey, response.token);
 					localStorage.setItem(environment.userKey, JSON.stringify(response.user));
 					this.currentUserSubject.next(response.user);
+					this.isAuthenticatedSignal.set(true);
 				})
 			);
 	}
@@ -54,6 +60,7 @@ export class AuthService {
 		localStorage.removeItem(environment.tokenKey);
 		localStorage.removeItem(environment.userKey);
 		this.currentUserSubject.next(null);
+		this.isAuthenticatedSignal.set(false);
 	}
 
 	getToken(): string | null {
@@ -61,7 +68,7 @@ export class AuthService {
 	}
 
 	isAuthenticated(): boolean {
-		return !!this.getToken();
+		return this.isAuthenticatedSignal();
 	}
 
 	getCurrentUser(): User | null {
