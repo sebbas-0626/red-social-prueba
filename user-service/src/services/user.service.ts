@@ -1,6 +1,5 @@
 import { User } from '../models/user.model';
-import { UpdateProfileData, CreateUserData, RegisterData } from '../interfaces/user.interface';
-import bcrypt from 'bcryptjs';
+import { UpdateProfileData, RegisterData } from '../interfaces/user.interface';
 
 // Get user profile by ID
 export const getUserProfile = async (userId: number) => {
@@ -40,28 +39,8 @@ export const getUsers = async () => {
     });
 };
 
-// Create user in user-service (called from auth-service)
-export const createUserInService = async (data: CreateUserData) => {
-    const { userId, username, email } = data;
-
-    const existingUser = await User.findByPk(userId);
-
-    if (existingUser) {
-        throw new Error('El usuario ya existe en user-service');
-    }
-
-    const user = await User.create({
-        id: userId,
-        username,
-        email,
-        password: '', // Password vacío para usuarios creados desde auth-service (legacy)
-    });
-
-    return user;
-};
-
-// Register new user with password (endpoint público)
-export const registerUser = async (data: RegisterData) => {
+// Crear usuario (utilizado desde auth-service, recibe password ya hasheado)
+export const createUser = async (data: RegisterData) => {
     const { username, email, password } = data;
 
     // Verificar si el usuario ya existe
@@ -73,14 +52,11 @@ export const registerUser = async (data: RegisterData) => {
         throw new Error('El usuario ya existe');
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Crear usuario
+    // Crear usuario con password (supuesto ya hasheado por auth-service)
     const user = await User.create({
         username,
         email,
-        password: hashedPassword,
+        password,
     });
 
     // Retornar sin password
@@ -99,4 +75,23 @@ export const getUserByEmail = async (email: string) => {
     }
 
     return user;
+};
+
+// Endpoint interno seguro para auth-service
+export const getUserCredentials = async (email: string) => {
+    const user = await User.findOne({
+        where: { email },
+        attributes: ['id', 'username', 'email', 'password']
+    });
+
+    if (!user) {
+        throw new Error('Usuario no encontrado');
+    }
+
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        passwordHash: user.password
+    };
 };

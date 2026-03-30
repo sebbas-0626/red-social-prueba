@@ -1,81 +1,50 @@
 # User Service - Microservicio de Gestión de Usuarios
 
 ## 📋 Descripción
-Microservicio encargado de gestionar la información de usuarios en la red social. Proporciona endpoints para obtener perfiles, actualizar información de usuario, buscar usuarios y gestionar relaciones entre usuarios.
+Microservicio encargado de **gestionar completamente** los datos de usuarios en la red social. Es la **única fuente de verdad** para información de usuarios. Maneja registro, perfiles, y almacena las credenciales (incluido password).
+
+## 🏗️ Arquitectura
+
+### ✅ Responsabilidades
+- **Registro de usuarios** (con password hasheado)
+- CRUD completo de usuarios
+- Gestión de perfiles (bio, avatar)
+- Búsqueda de usuarios
+- **Almacenamiento de passwords** (para que auth-service los consulte)
+- Proveer datos de usuario a otros servicios
+
+### 🔄 Interacción con Auth-Service
+```
+1. Usuario se registra → USER-SERVICE crea usuario con password
+2. Usuario hace login → AUTH-SERVICE consulta USER-SERVICE
+3. USER-SERVICE devuelve usuario con password
+4. AUTH-SERVICE valida y genera token
+```
 
 ## 🏗️ Estructura del Proyecto
 
 ### 📁 Carpetas Principales
 
-#### `/src` - Código Fuente
-Contiene todo el código TypeScript del microservicio.
-
-#### `/dist` - Código Compilado
-- **Función**: Contiene los archivos JavaScript compilados desde TypeScript
-- **Generación**: Se crea automáticamente al ejecutar `npm run build`
-- **Uso**: Node.js ejecuta estos archivos en producción
-
-#### `/node_modules` - Dependencias
-- **Función**: Contiene todas las librerías instaladas por npm
-- **Generación**: Se crea al ejecutar `npm install`
-
-### 📁 Estructura de `/src`
-
-#### `/src/app.ts` - Punto de Entrada Principal
-- **Función**: Archivo principal que inicia el servidor Express
-- **Responsabilidades**:
-  - Configurar middleware (CORS, JSON parsing)
-  - Conectar a la base de datos
-  - Configurar rutas de usuarios
-  - Iniciar el servidor en el puerto 3002
-
 #### `/src/controllers/` - Controladores
-- **Función**: Maneja la lógica de negocio de cada endpoint
-- **Archivos**:
-  - `userController.ts`: Controla operaciones CRUD de usuarios, búsquedas y gestión de perfiles
+- `userController.ts`: Controla operaciones CRUD, registro, búsquedas
 
 #### `/src/routes/` - Definición de Rutas
-- **Función**: Define los endpoints de la API de usuarios
-- **Archivos**:
-  - `userRoutes.ts`: Define rutas para `/api/users/*` (perfiles, búsquedas, actualizaciones)
+- `userRoutes.ts`: Rutas para `/api/users/*`
 
 #### `/src/models/` - Modelos de Datos
-- **Función**: Define la estructura de datos y relaciones con la base de datos
-- **Archivos**:
-  - `User.ts`: Modelo de usuario con Sequelize (extendido del auth-service)
+- `User.ts`: Modelo completo de usuario (incluye password)
+
+#### `/src/services/` - Servicios
+- `userService.ts`: Lógica de negocio (registro, búsqueda, etc.)
 
 #### `/src/middlewares/` - Middlewares
-- **Función**: Funciones que se ejecutan entre la petición y la respuesta
-- **Archivos**:
-  - `auth.ts`: Middleware para validar tokens JWT y autorización
+- `auth.ts`: Middleware para validar tokens JWT
 
 #### `/src/config/` - Configuraciones
-- **Función**: Archivos de configuración del microservicio
-- **Archivos**:
-  - `swagger.ts`: Configuración de documentación API
+- `swagger.ts`: Configuración de documentación API
 
 #### `/src/db/` - Base de Datos
-- **Función**: Configuración y conexión a la base de datos
-- **Archivos**:
-  - `connection.ts`: Configuración de Sequelize y conexión a PostgreSQL
-
-### 📄 Archivos de Configuración
-
-#### `package.json`
-- **Función**: Configuración del proyecto Node.js
-- **Contiene**: Dependencias, scripts, metadatos del proyecto
-
-#### `tsconfig.json`
-- **Función**: Configuración del compilador de TypeScript
-- **Define**: Versión de JavaScript, directorios de salida, opciones de compilación
-
-#### `Dockerfile`
-- **Función**: Instrucciones para crear imagen Docker del microservicio
-- **Incluye**: Instalación de dependencias, compilación, configuración del contenedor
-
-#### `.gitignore`
-- **Función**: Define qué archivos NO se suben al repositorio Git
-- **Excluye**: node_modules, dist, archivos de entorno
+- `connection.ts`: Configuración de Sequelize y conexión a PostgreSQL
 
 ## 🚀 Scripts Disponibles
 
@@ -96,26 +65,94 @@ DB_NAME=red_social
 DB_USER=postgres
 DB_PASSWORD=password
 JWT_SECRET=tu_secreto_jwt
+NODE_ENV=development  # development para local, production para Docker
 ```
 
 ## 📚 Endpoints Disponibles
 
+### Registro y Autenticación
+- `POST /api/users/register` - **Registrar nuevo usuario** (público)
+- `GET /api/users/by-email/:email` - Obtener usuario por email (interno, para auth-service)
+
 ### Perfiles de Usuario
-- `GET /api/users/profile/:id` - Obtener perfil de usuario
-- `PUT /api/users/profile/:id` - Actualizar perfil de usuario
-- `GET /api/users/profile` - Obtener perfil del usuario autenticado
+- `GET /api/users/profile` - Obtener perfil del usuario autenticado (requiere token)
+- `GET /api/users/profile/:id` - Obtener perfil público de usuario
+- `PUT /api/users/profile` - Actualizar perfil (requiere token)
 
-### Búsqueda de Usuarios
-- `GET /api/users/search` - Buscar usuarios por nombre
-- `GET /api/users` - Listar usuarios (con paginación)
-
-### Gestión de Usuarios
-- `DELETE /api/users/:id` - Eliminar usuario
-- `GET /api/users/:id/followers` - Obtener seguidores
-- `GET /api/users/:id/following` - Obtener usuarios seguidos
+### Lista de Usuarios
+- `GET /api/users/users/all` - Listar todos los usuarios
 
 ### Health Check
-- `GET /` - Verificar estado del servicio
+- `GET /health` - Verificar estado del servicio
+
+### Endpoints que nos faltan 
+```| Endpoint                      | Método | Público      | Descripción                                         |
+| ----------------------------- | ------ | ------------ | --------------------------------------------------- |
+| `/api/users/register`         | POST   | Sí           | Registrar un usuario (con password).                |
+| `/api/users`                  | GET    | Sí           | Listar usuarios públicos.                           |
+| `/api/users/:id`              | GET    | Sí           | Obtener perfil público.                             |
+| `/api/users/profile`          | GET    | Requiere JWT | Obtener **mi** perfil.                              |
+| `/api/users/profile`          | PUT    | Requiere JWT | Actualizar **mi** perfil.                           |
+| `/api/users/by-email/:email`  | GET    | Interno      | Devuelve datos de login para auth-service.          |
+| `/api/users/credentials`      | POST   | Interno      | Devuelve email + hash password.                     |
+| `/api/users/create-from-auth` | POST   | Interno      | Crear usuario desde auth-service (raremente usado). |
+
+```
+
+## 🔄 Flujo de Registro
+
+```
+Usuario
+  │
+  │ POST /api/users/register
+  │ { username, email, password }
+  ▼
+┌────────────────────────────┐
+│   USER-SERVICE             │
+│ 1. Valida datos            │
+│ 2. Hashea password (bcrypt)│
+│ 3. Crea usuario en DB      │
+│ 4. Devuelve user (sin pwd) │
+└────────────────────────────┘
+  │
+  ▼
+Usuario registrado ✅
+```
+
+## 🔄 Flujo de Login (consulta desde auth-service)
+
+```
+AUTH-SERVICE
+  │
+  │ GET /api/users/by-email/:email
+  ▼
+┌────────────────────────────┐
+│   USER-SERVICE             │
+│ 1. Busca usuario por email │
+│ 2. Devuelve usuario        │
+│    CON password hasheado   │
+└────────────────────────────┘
+  │
+  ▼
+AUTH-SERVICE valida password
+```
+
+## 🗄️ Modelo de Usuario
+
+```typescript
+{
+  id: number;
+  username: string;
+  email: string;
+  password: string;        // ⭐ Hasheado con bcrypt
+  bio?: string;
+  avatar?: string;
+  followersCount: number;
+  followingCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
 
 ## 🐳 Docker
 
@@ -134,14 +171,7 @@ Una vez ejecutado el servicio, la documentación estará disponible en:
 
 ## 🔗 Comunicación con Otros Microservicios
 
-Este microservicio se comunica con:
-- **Auth Service**: Para validar tokens JWT
-- **Post Service**: Para obtener información de posts de usuarios
-
-## 📊 Funcionalidades Principales
-
-1. **Gestión de Perfiles**: Actualizar información personal, avatar, bio
-2. **Búsqueda de Usuarios**: Buscar usuarios por nombre o username
-3. **Sistema de Seguidores**: Gestionar relaciones entre usuarios
-4. **Validación de Autorización**: Verificar permisos para operaciones
-5. **Documentación API**: Swagger integrado para testing 
+Este microservicio es consultado por:
+- **Auth Service**: Para validar credenciales en login
+- **Post Service**: Para obtener información de autores de posts
+- **Follow Service**: Para validar usuarios al seguir/dejar de seguir 

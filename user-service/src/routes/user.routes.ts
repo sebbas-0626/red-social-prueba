@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProfile, updateProfile, getAllUsers, createUser, register, getByEmail } from '../controllers/user.controller';
+import { getProfile, updateProfile, getAllUsers, createUserController, getByEmail, getAuthCredentials } from '../controllers/user.controller';
 import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
@@ -46,12 +46,15 @@ const router = Router();
  *           description: Fecha de última actualización
  */
 
+// Endpoint interno para crear usuario desde auth-service (ya con password hasheado)
+router.post('/internal/create', createUserController);
+
 /**
  * @swagger
- * /api/users/register:
+ * /api/users/internal/auth/user:
  *   post:
- *     summary: Registrar nuevo usuario
- *     tags: [Users]
+ *     summary: Obtener credenciales de usuario (INTERNO - solo auth-service)
+ *     tags: [Internal]
  *     requestBody:
  *       required: true
  *       content:
@@ -59,25 +62,20 @@ const router = Router();
  *           schema:
  *             type: object
  *             required:
- *               - username
  *               - email
- *               - password
  *             properties:
- *               username:
- *                 type: string
  *               email:
  *                 type: string
- *               password:
- *                 type: string
  *     responses:
- *       201:
- *         description: Usuario registrado exitosamente
- *       400:
- *         description: El usuario ya existe
+ *       200:
+ *         description: Credenciales del usuario
+ *       404:
+ *         description: Usuario no encontrado
  *       500:
  *         description: Error del servidor
  */
-router.post('/register', register);
+// Este endpoint es para uso exclusivo de auth-service, no debe ser expuesto públicamente ni documentado en Swagger para clientes externos
+router.post('/internal/auth/user', getAuthCredentials);
 
 /**
  * @swagger
@@ -100,7 +98,7 @@ router.post('/register', register);
  *       500:
  *         description: Error del servidor
  */
-router.get('/by-email/:email', getByEmail);
+router.get('/internal/by-email/:email', getByEmail);
 
 /**
  * @swagger
@@ -209,7 +207,5 @@ router.get('/profile/:id', getProfile);
  *         description: Error del servidor
  */
 router.put('/profile', authenticateToken, updateProfile);
-
-router.post('/', createUser);
 
 export default router;
