@@ -1,10 +1,4 @@
 // DTOs (Data Transfer Objects)
-export interface RegisterData {
-    username: string;
-    email: string;
-    password: string;
-}
-
 export interface LoginData {
     email: string;
     password: string;
@@ -12,7 +6,8 @@ export interface LoginData {
 
 export interface AuthResponse {
     message: string;
-    token: string;
+    accessToken: string;
+    refreshToken: string;
     user: {
         id: number;
         username: string;
@@ -20,10 +15,23 @@ export interface AuthResponse {
     };
 }
 
-// Model Attributes
-export interface UserAttributes {
-    id?: number;
+export interface RefreshTokenData {
+    refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+    accessToken: string;
+    refreshToken: string;
+}
+
+export interface LogoutData {
+    refreshToken: string;
+}
+
+// Internal DTOs (comunicación con user-service)
+export interface UserCredentials {
+    id: number;
     username: string;
     email: string;
-    password: string;
+    passwordHash: string;
 }

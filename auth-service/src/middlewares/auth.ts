@@ -1,23 +1,45 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
-interface AuthRequest extends Request {
-  userId?: number;
+export interface AuthRequest extends Request {
+  user?: {
+    id: number;
+    email: string;
+  };
 }
 
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+export const authenticateToken = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token de acceso requerido' });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET!, (err: any, decoded: any) => {
-    if (err) {
-      return res.status(403).json({ message: 'Token inválido' });
+    if (!authHeader) {
+      return res.status(401).json({ message: "Token requerido" });
     }
-    req.userId = decoded.userId;
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Token mal formateado" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+    // 🚀 Guardamos info útil para los demás microservicios
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+    };
+
     next();
-  });
+  } catch (error: any) {
+    const isExpired = error.name === "TokenExpiredError";
+
+    return res.status(401).json({
+      message: isExpired ? "Token expirado" : "Token inválido",
+    });
+  }
 };

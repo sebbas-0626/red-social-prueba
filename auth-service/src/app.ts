@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { sequelize } from './db/connection';
+import { sequelize, initializeDatabase } from './db/connection';
 import authRoutes from './routes/auth.routes';
 import { setupSwagger } from './config/swagger';
+import './models/refresh-token.model';
+import './models/token-blacklist.model';
 
 dotenv.config();
 
@@ -23,11 +25,20 @@ app.get('/', (_req, res) => {
 });
 
 app.listen(PORT, async () => {
-  console.log(`🚀 Servidor Auth iniciado en el puerto ${PORT}`);
+  console.log(`🚀 Auth Service iniciado en puerto ${PORT}`);
+  console.log(`📝 Documentación: http://localhost:${PORT}/api-docs`);
+  
   try {
+    // Crear BD si no existe
+    await initializeDatabase();
+    
+    // Conectar a la BD
     await sequelize.authenticate();
-    await sequelize.sync();
-    console.log('✅ Base de datos conectada y sincronizada');
+    console.log('✅ Conectado a auth_db');
+    
+    // Sincronizar modelos
+    await sequelize.sync({ alter: true });
+    console.log('✅ Modelos sincronizados (refresh_tokens, token_blacklist)');
   } catch (error) {
     console.error('❌ Error con la base de datos:', error);
   }

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { login } from '../controllers/auth.controller';
+import { register, login, refresh, logout, revokeAll } from '../controllers/auth.controller';
+import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
 
@@ -7,7 +8,7 @@ const router = Router();
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Login a user
+ *     summary: Login de usuario
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -25,12 +26,126 @@ const router = Router();
  *                 type: string
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Login exitoso con access y refresh token
  *       401:
- *         description: Invalid credentials
+ *         description: Credenciales inválidas
  *       500:
- *         description: Server error
+ *         description: Error del servidor
  */
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Registrar usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuario registrado exitosamente
+ *       400:
+ *         description: El usuario ya existe
+ *       503:
+ *         description: Servicio no disponible
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/register', register);
+
 router.post('/login', login);
+
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refrescar access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Nuevo access token generado
+ *       401:
+ *         description: Refresh token inválido o expirado
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/refresh', refresh);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Cerrar sesión
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Sesión cerrada exitosamente
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/logout', logout);
+
+/**
+ * @swagger
+ * /api/auth/revoke-all:
+ *   post:
+ *     summary: Revocar todas las sesiones de un usuario
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *             properties:
+ *               userId:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Todas las sesiones revocadas
+ *       500:
+ *         description: Error del servidor
+ */
+router.post('/revoke-all', authenticateToken, revokeAll);
 
 export default router;
