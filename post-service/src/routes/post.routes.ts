@@ -85,6 +85,7 @@ const router = Router();
  *       500:
  *         description: Error del servidor
  */
+// Rutas para posts (autenticación requerida para creación, actualización y eliminación)
 router.post('/', authenticateToken, createPost);
 router.get('/', getAllPosts);
 
@@ -113,6 +114,7 @@ router.get('/', getAllPosts);
  *       500:
  *         description: Error del servidor
  */
+// Ruta para obtener posts de un usuario específico (no requiere autenticación, ya que es información pública)
 router.get('/user/:userId', getUserPosts);
 
 /**
@@ -195,6 +197,7 @@ router.get('/user/:userId', getUserPosts);
  *       500:
  *         description: Error del servidor
  */
+// Rutas para actualizar y eliminar posts (requiere autenticación) y autorización (solo el creador del post puede modificarlo o eliminarlo)
 router.put('/:postId', authenticateToken, updatePostController);
 router.delete('/:postId', authenticateToken, deletePostController);
 

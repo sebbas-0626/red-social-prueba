@@ -1,7 +1,22 @@
 # Auth Service - Microservicio de Autenticación
 
 ## 📋 Descripción
-Microservicio encargado de manejar la autenticación y autorización de usuarios en la red social. Proporciona endpoints para registro, login, y validación de tokens JWT.
+Microservicio encargado de manejar **SOLO la autenticación** (login y generación de tokens JWT). **NO gestiona usuarios ni tiene base de datos propia**. Consulta al `user-service` para validar credenciales.
+
+## 🏗️ Arquitectura
+
+### ✅ Responsabilidades
+- Login de usuarios
+- Generación y validación de tokens JWT
+- Refresh tokens
+- **NO registra usuarios** (lo hace `user-service`)
+- **NO almacena datos de usuarios** (solo consulta `user-service`)
+
+### ❌ NO hace
+- Registro de usuarios (usar `user-service`)
+- CRUD de usuarios
+- Gestión de perfiles
+- Almacenamiento de datos de usuario
 
 ## 🏗️ Estructura del Proyecto
 
@@ -10,74 +25,22 @@ Microservicio encargado de manejar la autenticación y autorización de usuarios
 #### `/src` - Código Fuente
 Contiene todo el código TypeScript del microservicio.
 
-#### `/dist` - Código Compilado
-- **Función**: Contiene los archivos JavaScript compilados desde TypeScript
-- **Generación**: Se crea automáticamente al ejecutar `npm run build`
-- **Uso**: Node.js ejecuta estos archivos en producción
-
-#### `/node_modules` - Dependencias
-- **Función**: Contiene todas las librerías instaladas por npm
-- **Generación**: Se crea al ejecutar `npm install`
-
-### 📁 Estructura de `/src`
-
-#### `/src/app.ts` - Punto de Entrada Principal
-- **Función**: Archivo principal que inicia el servidor Express
-- **Responsabilidades**:
-  - Configurar middleware (CORS, JSON parsing)
-  - Conectar a la base de datos
-  - Configurar rutas
-  - Iniciar el servidor en el puerto especificado
-
 #### `/src/controllers/` - Controladores
-- **Función**: Maneja la lógica de negocio de cada endpoint
-- **Archivos**:
-  - `authController.ts`: Controla registro, login y validación de usuarios
+- `authController.ts`: Solo maneja login
 
 #### `/src/routes/` - Definición de Rutas
-- **Función**: Define los endpoints de la API
-- **Archivos**:
-  - `authRoutes.ts`: Define rutas para `/api/auth/*`
+- `authRoutes.ts`: Solo ruta `/api/auth/login`
 
-#### `/src/models/` - Modelos de Datos
-- **Función**: Define la estructura de datos y relaciones con la base de datos
-- **Archivos**:
-  - `User.ts`: Modelo de usuario con Sequelize
+#### `/src/services/` - Servicios
+- `authService.ts`: Consulta `user-service` con axios para validar credenciales
 
 #### `/src/middlewares/` - Middlewares
-- **Función**: Funciones que se ejecutan entre la petición y la respuesta
-- **Archivos**:
-  - `auth.ts`: Middleware para validar tokens JWT
+- `auth.ts`: Middleware para validar tokens JWT
 
 #### `/src/config/` - Configuraciones
-- **Función**: Archivos de configuración del microservicio
-- **Archivos**:
-  - `swagger.ts`: Configuración de documentación API
+- `swagger.ts`: Configuración de documentación API
 
-#### `/src/db/` - Base de Datos
-- **Función**: Configuración y conexión a la base de datos
-- **Archivos**:
-  - `connection.ts`: Configuración de Sequelize y conexión a PostgreSQL
-
-### 📄 Archivos de Configuración
-
-#### `package.json`
-- **Función**: Configuración del proyecto Node.js
-- **Contiene**: Dependencias, scripts, metadatos del proyecto
-
-#### `tsconfig.json`
-- **Función**: Configuración del compilador de TypeScript
-- **Define**: Versión de JavaScript, directorios de salida, opciones de compilación
-
-#### `Dockerfile`
-- **Función**: Instrucciones para crear imagen Docker del microservicio
-- **Incluye**: Instalación de dependencias, compilación, configuración del contenedor
-
-#### `.gitignore`
-- **Función**: Define qué archivos NO se suben al repositorio Git
-- **Excluye**: node_modules, dist, archivos de entorno
-
-## 🚀 Scripts Disponibles local
+## 🚀 Scripts Disponibles
 
 ```bash
 npm run dev    # Ejecuta en modo desarrollo con hot-reload
@@ -90,20 +53,45 @@ npm start      # Ejecuta la aplicación en producción
 Crear archivo `.env` con:
 ```env
 PORT=3001
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=red_social
-DB_USER=postgres
-DB_PASSWORD=password
 JWT_SECRET=tu_secreto_jwt
+USER_SERVICE_URL=http://user-service:3002  # Docker
+# USER_SERVICE_URL=http://localhost:3002   # Local
+NODE_ENV=production  # production para Docker, development para local
 ```
 
 ## 📚 Endpoints Disponibles
 
-- `POST /api/auth/register` - Registrar nuevo usuario
 - `POST /api/auth/login` - Iniciar sesión
-- `GET /api/auth/verify` - Verificar token JWT
-- `GET /` - Health check del servicio
+- `GET /health` - Health check del servicio
+
+## 🔄 Flujo de Login
+
+```
+Usuario
+  │
+  │ POST /api/auth/login { email, password }
+  ▼
+┌──────────────────────────┐
+│   AUTH-SERVICE           │
+│ 1. Recibe credenciales   │
+│ 2. Consulta user-service │◄────┐
+└────────┬─────────────────┘     │
+         │                        │
+         │ GET /api/users/by-email/:email
+         ▼                        │
+    ┌──────────────────────┐     │
+    │   USER-SERVICE       │     │
+    │ 3. Devuelve usuario  │─────┘
+    │    con password      │
+    └──────────────────────┘
+
+AUTH-SERVICE
+│ 4. Valida password con bcrypt
+│ 5. Genera JWT
+│ 6. Devuelve token + user data
+▼
+Usuario recibe token
+```
 
 ## 🐳 Docker
 
@@ -118,41 +106,6 @@ docker run -p 3001:3001 auth-service
 ## 🔍 Swagger Documentation
 
 Una vez ejecutado el servicio, la documentación estará disponible en:
-`http://localhost:3001/api-docs` 
-
-##flujo auth-service - user-service
-
-Usuario
-  │
-  │ POST /register
-  ▼
-┌──────────────────┐
-│  AUTH-SERVICE    │ 1. Recibe registro
-│                  │ 2. Crea en auth_db
-│                  │ 3. Llama a user-service
-└────────┬─────────┘
-         │
-         │ POST http://user-service:3002/api/users
-         ▼
-    ┌──────────────────┐
-    │  USER-SERVICE    │ 4. Recibe notificación
-    │                  │ 5. Crea perfil en user_db
-    └──────────────────┘
-
-## ahora 
-Usuario registra
-       ↓
-┌──────────────────┐
-│  AUTH-SERVICE    │ 1. Crea usuario en auth_db
-│                  │ 2. Genera token
-│                  │ 3. ⭐ Llama a USER-SERVICE ⭐
-└────────┬─────────┘
-         │
-         │ POST http://user-service:3002/api/users
-         │ Body: { userId, username, email }
-         ▼
-    ┌──────────────────┐
-    │  USER-SERVICE    │ 4. Crea perfil en user_db
-    └──────────────────┘
+`http://localhost:3001/api-docs`
 
     

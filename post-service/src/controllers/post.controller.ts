@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { create, getAll, getUser, deletePost, updatePost, updateLikesCounter } from '../services/post.services';
 import { AuthRequest } from '../interfaces/post.interface';
 
+// Controlador para crear un nuevo post (requiere autenticación)
 export const createPost = async (req: AuthRequest, res: Response) => {
   try {
     const { content, imageUrl } = req.body;
@@ -24,6 +25,7 @@ export const createPost = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Ruta para obtener todos los posts (información pública, no requiere autenticación)
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await getAll();
@@ -32,7 +34,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error del servidor', error });
   }
 };
-
+// Ruta para obtener posts de un usuario específico (información pública, no requiere autenticación)
 export const getUserPosts = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -44,7 +46,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error del servidor', error });
   }
 };
-
+// Controlador para eliminar un post (requiere autenticación y autorización)
 export const deletePostController = async (req: AuthRequest, res: Response) => {
   try {
     const { postId } = req.params;
@@ -61,7 +63,7 @@ export const deletePostController = async (req: AuthRequest, res: Response) => {
     }
   }
 };
-
+// Controlador para actualizar un post (requiere autenticación y autorización)
 export const updatePostController = async (req: AuthRequest, res: Response) => {
   try {
     const { postId } = req.params;
@@ -87,7 +89,7 @@ export const updatePostController = async (req: AuthRequest, res: Response) => {
     }
   }
 };
-
+// Controlador para actualizar el contador de likes de un post (requiere autenticación, pero no autorización, ya que cualquier usuario puede dar like o dislike a un post)
 export const updateLikesCount = async (req: Request, res: Response) => {
   try {
     const { postId } = req.params;
@@ -99,10 +101,10 @@ export const updateLikesCount = async (req: Request, res: Response) => {
 
     const result = await updateLikesCounter(Number(postId), change);
 
-    res.json({ 
-      message: 'Contador de likes actualizado', 
-      postId: Number(postId), 
-      likesCount: result.likesCount 
+    res.json({
+      message: 'Contador de likes actualizado',
+      postId: Number(postId),
+      likesCount: result.likesCount
     });
   } catch (error: any) {
     if (error.message === 'Post no encontrado') {

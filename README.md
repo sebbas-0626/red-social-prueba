@@ -6,9 +6,9 @@ Aplicación de red social completa con arquitectura de microservicios y frontend
 ## 🏗️ Arquitectura
 
 ### Backend (Microservicios)
-- **auth-service**: Autenticación y autorización (puerto 3001)
-- **user-service**: Gestión de usuarios (puerto 3002)
-- **post-service**: Gestión de posts y likes (puerto 3003)
+- **auth-service**: Autenticación y JWT (puerto 3001) - Sin BD
+- **user-service**: Gestión de usuarios (puerto 3002) - PostgreSQL
+- **post-service**: Gestión de posts y likes (puerto 3003) - PostgreSQL
 
 ### Frontend
 - **red-social-angular**: Aplicación Angular (puerto 80)
@@ -156,3 +156,10 @@ npm run build
 - PostgreSQL como base de datos principal
 - Docker para containerización
 - nginx para servir el frontend
+
+## comandos para migraciones 
+```bash 
+npx sequelize-cli db:migrate
+npx sequelize-cli db:migrate:undo
+npx sequelize-cli db:migrate:undo:all
+``` 
