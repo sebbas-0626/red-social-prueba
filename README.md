@@ -108,6 +108,11 @@ docker-compose build --no-cache
 
 ### Desarrollo
 ```bash
+# Crear proyecto de node + typescript
+npm init -y
+
+npm install typescript ts-node @types/node --save-dev
+
 # Instalar dependencias
 npm install
 
