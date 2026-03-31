@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { getUserProfile, updateUserProfile, getUsers, createUser, getUserByEmail, getUserCredentials } from '../services/user.service';
-import { AuthRequest } from '../interfaces/user.interface';
-// import { authenticateToken } from '../middlewares/auth'; // Si decides usar autenticación en este controlador, descomenta esta línea y el middleware en las rutas correspondientes
+import { AuthRequest } from '../middlewares/auth';
+
 export const getProfile = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.params.id || req.userId;

@@ -9,7 +9,7 @@ export const initializeDatabase = async () => {
 
   const adminSequelize = new Sequelize({
     host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT) || 5435,
+    port: Number(process.env.DB_PORT) || 5432,
     database: adminDb,
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
@@ -25,7 +25,7 @@ export const initializeDatabase = async () => {
       // Si el DB de administración no existe, intentamos conectar directamente al target (ya creado por el usuario).
       const targetSequelize = new Sequelize({
         host: process.env.DB_HOST || 'localhost',
-        port: Number(process.env.DB_PORT) || 5435,
+        port: Number(process.env.DB_PORT) || 5432,
         database: targetDb,
         username: process.env.DB_USER || 'postgres',
         password: process.env.DB_PASSWORD || 'postgres',
@@ -70,7 +70,7 @@ export const initializeDatabase = async () => {
 
 export const sequelize = new Sequelize({
   host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT) || 5435,
+  port: Number(process.env.DB_PORT) || 5432,
   database: process.env.DB_NAME || 'auth_db',
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',

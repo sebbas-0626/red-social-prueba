@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { loginUser, refreshAccessToken, logoutUser, revokeAllUserTokens, registerUser } from '../services/auth.service';
+import { AuthRequest } from '../middlewares/auth';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -81,9 +82,9 @@ export const revokeAll = async (req: Request, res: Response) => {
   }
 };
 
-export const validate = (req: Request, res: Response) => {
-  // auth middleware añade req.userId si el token es válido
-  const userId = (req as any).userId;
+// Valida que el accessToken sea correcto — útil para el gateway y otros microservicios
+export const validate = (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
 
   return res.json({
     message: 'Token válido',

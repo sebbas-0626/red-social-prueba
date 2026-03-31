@@ -1,53 +1,51 @@
-import { Router } from 'express';
-import { getProfile, updateProfile, getAllUsers, createUserController, getByEmail, getAuthCredentials } from '../controllers/user.controller';
-import { authenticateToken } from '../middlewares/auth';
+import { Router } from "express";
+import {
+    getProfile,
+    updateProfile,
+    getAllUsers,
+    createUserController,
+    getByEmail,
+    getAuthCredentials,
+} from "../controllers/user.controller";
+import { authenticateToken } from "../middlewares/auth";
 
 const router = Router();
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       required:
- *         - username
- *         - email
- *       properties:
- *         id:
- *           type: integer
- *           description: ID único del usuario
- *         username:
- *           type: string
- *           description: Nombre de usuario
- *         email:
- *           type: string
- *           format: email
- *           description: Email del usuario
- *         bio:
- *           type: string
- *           description: Biografía del usuario
- *         avatar:
- *           type: string
- *           description: URL del avatar del usuario
- *         followersCount:
- *           type: integer
- *           description: Número de seguidores
- *         followingCount:
- *           type: integer
- *           description: Número de usuarios que sigue
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: Fecha de creación de la cuenta
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: Fecha de última actualización
+ * /users/internal/create:
+ *   post:
+ *     summary: Crear usuario desde auth-service (interno)
+ *     description: Endpoint interno utilizado únicamente por auth-service para crear un usuario (password ya viene hasheado).
+ *     tags: [Internal]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "nuevo_usuario"
+ *               email:
+ *                 type: string
+ *                 example: "correo@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "$2b$10$hashhasheado"
+ *     responses:
+ *       201:
+ *         description: Usuario creado correctamente
+ *       400:
+ *         description: El usuario ya existe
+ *       500:
+ *         description: Error interno del servidor
  */
-
-// Endpoint interno para crear usuario desde auth-service (ya con password hasheado)
-router.post('/internal/create', createUserController);
 
 /**
  * @swagger
@@ -66,6 +64,7 @@ router.post('/internal/create', createUserController);
  *             properties:
  *               email:
  *                 type: string
+ *                  
  *     responses:
  *       200:
  *         description: Credenciales del usuario
@@ -75,30 +74,23 @@ router.post('/internal/create', createUserController);
  *         description: Error del servidor
  */
 // Este endpoint es para uso exclusivo de auth-service, no debe ser expuesto públicamente ni documentado en Swagger para clientes externos
-router.post('/internal/auth/user', getAuthCredentials);
+router.post("/internal/auth/user", getAuthCredentials);
 
 /**
  * @swagger
- * /api/users/by-email/{email}:
+ * /users/internal/by-email/{email}:
  *   get:
  *     summary: Obtener usuario por email (interno)
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: email
- *         required: true
- *         schema:
- *           type: string
- *         description: Email del usuario
- *     responses:
+     tags: [Internal]
+  response:
  *       200:
  *         description: Usuario encontrado
  *       404:
  *         description: Usuario no encontrado
  *       500:
  *         description: Error del servidor
- */
-router.get('/internal/by-email/:email', getByEmail);
+     */
+router.get("/internal/by-email/:email", getByEmail);
 
 /**
  * @swagger
@@ -122,7 +114,7 @@ router.get('/internal/by-email/:email', getByEmail);
  *       500:
  *         description: Error del servidor
  */
-router.get('/profile', authenticateToken, getProfile);
+router.get("/profile", authenticateToken, getProfile);
 
 /**
  * @swagger
@@ -142,7 +134,7 @@ router.get('/profile', authenticateToken, getProfile);
  *       500:
  *         description: Error del servidor
  */
-router.get('/users/all', getAllUsers);
+router.get("/users/all", getAllUsers);
 
 /**
  * @swagger
@@ -169,7 +161,7 @@ router.get('/users/all', getAllUsers);
  *       500:
  *         description: Error del servidor
  */
-router.get('/profile/:id', getProfile);
+router.get("/profile/:id", getProfile);
 
 /**
  * @swagger
@@ -206,6 +198,6 @@ router.get('/profile/:id', getProfile);
  *       500:
  *         description: Error del servidor
  */
-router.put('/profile', authenticateToken, updateProfile);
+router.put("/profile", authenticateToken, updateProfile);
 
 export default router;

@@ -1,5 +1,3 @@
-import { Request } from 'express';
-
 // DTOs (Data Transfer Objects)
 export interface UpdateProfileData {
     bio?: string;
@@ -16,10 +14,6 @@ export interface RegisterData {
     username: string;
     email: string;
     password: string;
-}
-
-export interface AuthRequest extends Request {
-    userId?: number;
 }
 
 // Model Attributes

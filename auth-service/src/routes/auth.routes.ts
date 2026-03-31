@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, refresh, logout, revokeAll } from '../controllers/auth.controller';
+import { register, login, refresh, logout, revokeAll, validate } from '../controllers/auth.controller';
 import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
@@ -147,5 +147,31 @@ router.post('/logout', logout);
  *         description: Error del servidor
  */
 router.post('/revoke-all', authenticateToken, revokeAll);
+
+/**
+ * @swagger
+ * /api/auth/validate:
+ *   get:
+ *     summary: Validar access token (uso interno entre microservicios)
+ *     description: Verifica que el token JWT es válido y devuelve el userId. Útil para que otros microservicios validen tokens.
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 userId:
+ *                   type: number
+ *       401:
+ *         description: Token inválido o expirado
+ */
+router.get('/validate', authenticateToken, validate);
 
 export default router;

@@ -1,92 +1,82 @@
 import { User } from '../models/user.model';
 import { UpdateProfileData, RegisterData } from '../interfaces/user.interface';
+import { Op } from 'sequelize';
+import { AppError } from '../utils/AppError';
 
-// Get user profile by ID
+// Perfil público
 export const getUserProfile = async (userId: number) => {
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'username', 'email', 'bio', 'avatar', 'followersCount', 'followingCount', 'createdAt']
+        attributes: ['id', 'username', 'bio', 'avatar', 'createdAt']
     });
 
-    if (!user) {
-        throw new Error('Usuario no encontrado');
-    }
+    if (!user) throw new AppError(404, 'Usuario no encontrado');
 
     return user;
 };
 
-// Update user profile
+// Perfil del usuario autenticado
+export const getOwnProfile = async (userId: number) => {
+    const user = await User.findByPk(userId, {
+        attributes: ['id', 'username', 'email', 'bio', 'avatar', 'createdAt']
+    });
+
+    if (!user) throw new AppError(404, 'Usuario no encontrado');
+
+    return user;
+};
+
 export const updateUserProfile = async (userId: number, data: UpdateProfileData) => {
     const user = await User.findByPk(userId);
 
-    if (!user) {
-        throw new Error('Usuario no encontrado');
-    }
+    if (!user) throw new AppError(404, 'Usuario no encontrado');
 
-    await user.update(data);
+    const updated = await user.update(data);
 
-    const updatedUser = await User.findByPk(userId, {
-        attributes: ['id', 'username', 'email', 'bio', 'avatar', 'followersCount', 'followingCount']
-    });
-
-    return updatedUser;
+    return updated;
 };
 
-// Get all users
-export const getUsers = async () => {
-    return await User.findAll({
-        attributes: ['id', 'username', 'bio', 'avatar', 'followersCount', 'followingCount'],
-        limit: 20
+// Listado de usuarios
+export const getUsers = async (limit = 20, offset = 0) => {
+    return User.findAll({
+        attributes: ['id', 'username', 'bio', 'avatar'],
+        limit,
+        offset
     });
 };
 
-// Crear usuario (utilizado desde auth-service, recibe password ya hasheado)
+// Crear usuario (solo llamado desde auth-service)
 export const createUser = async (data: RegisterData) => {
-    const { username, email, password } = data;
+    const { username, email, password: hashedPassword } = data;
 
-    // Verificar si el usuario ya existe
-    const existingUser = await User.findOne({
-        where: { email }
+    const existing = await User.findOne({
+        where: { [Op.or]: [{ email }, { username }] }
     });
 
-    if (existingUser) {
-        throw new Error('El usuario ya existe');
-    }
+    if (existing) throw new AppError(400, 'Usuario ya existe');
 
-    // Crear usuario con password (supuesto ya hasheado por auth-service)
-    const user = await User.create({
-        username,
-        email,
-        password,
-    });
+    const user = await User.create({ username, email, password: hashedPassword });
 
-    // Retornar sin password
-    const { password: _, ...userWithoutPassword } = user.toJSON();
-    return userWithoutPassword;
+    const { password: _, ...clean } = user.toJSON();
+    return clean;
 };
 
-// Get user by email (para auth-service)
+// Busqueda interna por email (solo auth-service)
 export const getUserByEmail = async (email: string) => {
-    const user = await User.findOne({
-        where: { email }
-    });
+    const user = await User.findOne({ where: { email } });
 
-    if (!user) {
-        throw new Error('Usuario no encontrado');
-    }
+    if (!user) throw new AppError(404, 'Usuario no encontrado');
 
     return user;
 };
 
-// Endpoint interno seguro para auth-service
+// Solo auth-service necesita el hash de la contraseña para autenticación
 export const getUserCredentials = async (email: string) => {
     const user = await User.findOne({
         where: { email },
         attributes: ['id', 'username', 'email', 'password']
     });
 
-    if (!user) {
-        throw new Error('Usuario no encontrado');
-    }
+    if (!user) throw new AppError(404, 'Usuario no encontrado');
 
     return {
         id: user.id,

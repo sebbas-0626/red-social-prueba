@@ -46,7 +46,7 @@ export const registerUser = async (data: RegisterData) => {
 
     // Verificar si el usuario ya existe
     try {
-        await axios.get(`${USER_SERVICE_URL}/api/users/by-email/${encodeURIComponent(email)}`, { timeout: 5000 });
+        await axios.get(`${USER_SERVICE_URL}/api/users/internal/by-email/${encodeURIComponent(email)}`, { timeout: 5000 });
         throw new Error('El usuario ya existe');
     } catch (error: any) {
         if (error.response?.status !== 404) {

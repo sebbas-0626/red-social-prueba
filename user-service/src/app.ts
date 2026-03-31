@@ -20,14 +20,15 @@ setupSwagger(app);
 app.use('/api/users', userRoutes);
 
 app.get('/', (_req, res) => {
-  res.send('✅User service funcionando correctamente');
+  res.send('✅ User service funcionando correctamente');
 });
 
 app.listen(PORT, async () => {
   console.log(`🚀 Servidor User iniciado en el puerto ${PORT}`);
+  console.log(`📝 Documentación: http://localhost:${PORT}/api-docs`);
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true }); // Cambiado de sync() a sync({ alter: true })
+    await sequelize.sync({ alter: true });
     console.log('✅ Base de datos conectada y sincronizada');
   } catch (error) {
     console.error('❌ Error con la base de datos:', error);

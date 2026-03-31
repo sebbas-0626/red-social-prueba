@@ -1,23 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
-interface AuthRequest extends Request {
+// AuthRequest exportada para que los controllers puedan tiparlo correctamente
+// (en lugar de tener que redefinirla en cada controller o usar interfaces duplicadas)
+export interface AuthRequest extends Request {
   userId?: number;
 }
 
 export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  try {
+    const authHeader = req.headers['authorization'];
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token de acceso requerido' });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET!, (err: any, decoded: any) => {
-    if (err) {
-      return res.status(403).json({ message: 'Token inválido' });
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Token de acceso requerido' });
     }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
     req.userId = decoded.userId;
     next();
-  });
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expirado' });
+    }
+    return res.status(401).json({ message: 'Token inválido' });
+  }
 };
